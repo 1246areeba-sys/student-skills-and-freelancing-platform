@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Leave a Review — {{ platform_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/student.css') }}">
+{% endblock %}
+{% block content %}
+<div class="container narrow">
+    <a href="{{ url_for('projects.detail', project_id=project.id) }}" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Project</a>
+    <div class="panel">
+        <h2>Leave a Review</h2>
+        <p class="muted">Project: <strong>{{ project.title }}</strong></p>
+        <p>Reviewing: <strong>{{ reviewed_user.name }}</strong></p>
+
+        <form method="post" action="{{ url_for('review.leave_review', project_id=project.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+            <div class="form-group">
+                <label>Rating</label>
+                <div class="star-input" id="starInput">
+                    {% for i in range(1,6) %}
+                    <i class="fa-regular fa-star" data-value="{{ i }}"></i>
+                    {% endfor %}
+                </div>
+                <input type="hidden" name="rating" id="ratingValue" value="5">
+            </div>
+            <div class="form-group">
+                <label>Your Review</label>
+                <textarea name="review" class="form-control" rows="5" placeholder="Share your experience working on this project..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-gold btn-block"><i class="fa-solid fa-star"></i> Submit Review</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const stars = document.querySelectorAll('#starInput i');
+    const ratingValue = document.getElementById('ratingValue');
+    stars.forEach(function (star) {
+        star.addEventListener('click', function () {
+            const val = parseInt(star.getAttribute('data-value'), 10);
+            ratingValue.value = val;
+            stars.forEach(function (s) {
+                const v = parseInt(s.getAttribute('data-value'), 10);
+                s.classList.toggle('fa-solid', v <= val);
+                s.classList.toggle('fa-regular', v > val);
+                s.classList.toggle('text-gold', v <= val);
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

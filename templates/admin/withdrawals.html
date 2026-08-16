@@ -1,0 +1,37 @@
+{% extends "admin/base.html" %}
+{% set title = 'Withdrawals' %}
+{% block admin_content %}
+<div class="panel">
+    <table class="admin-table">
+        <thead><tr><th>Student</th><th>Amount</th><th>Method</th><th>Details</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+        <tbody>
+        {% for w in withdrawals %}
+        <tr>
+            <td>{{ w.student.user.name }}</td>
+            <td class="text-gold">{{ w.amount|money }}</td>
+            <td>{{ w.method }}</td>
+            <td class="muted small">{{ w.account_details or '—' }}</td>
+            <td><span class="badge-status badge-{{ w.status }}">{{ w.status }}</span></td>
+            <td class="muted small">{{ w.created_at|date }}</td>
+            <td class="admin-actions">
+                <form method="post" action="{{ url_for('admin.withdrawal_status', withdrawal_id=w.id) }}" class="inline-form">
+                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                    <select name="status" onchange="this.form.submit()" class="form-control-sm">
+                        <option value="pending" {% if w.status == 'pending' %}selected{% endif %}>Pending</option>
+                        <option value="approved" {% if w.status == 'approved' %}selected{% endif %}>Approved</option>
+                        <option value="paid" {% if w.status == 'paid' %}selected{% endif %}>Paid</option>
+                        <option value="rejected" {% if w.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                    </select>
+                </form>
+                <form method="post" action="{{ url_for('admin.delete_withdrawal', withdrawal_id=w.id) }}" class="inline-form" onsubmit="return confirm('Delete this withdrawal?')">
+                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                    <button class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if not withdrawals %}<p class="muted empty-inline">No withdrawal requests yet.</p>{% endif %}
+</div>
+{% endblock %}

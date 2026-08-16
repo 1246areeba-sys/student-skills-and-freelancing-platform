@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Search — {{ platform_name }}{% endblock %}
+{% block content %}
+<section class="page-hero">
+    <div class="container text-center">
+        <h1>Search Results</h1>
+        {% if q %}<p>Results for "<strong>{{ q }}</strong>"</p>{% endif %}
+    </div>
+</section>
+<section class="section">
+    <div class="container">
+        <div class="search-form-wrap">
+            <form action="{{ url_for('home.global_search') }}" method="get" class="search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" name="q" value="{{ q }}" placeholder="Search skills, projects, students...">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+        </div>
+
+        {% if q %}
+        <h3 class="mt-4">Students</h3>
+        <div class="card-grid">
+            {% for student in student_results %}
+            <div class="student-card">
+                <img src="{{ url_for('static', filename=student.user.display_picture) }}" alt="avatar" class="student-avatar" onerror="this.src='{{ url_for('static', filename='images/default-avatar.png') }}'">
+                <h4>{{ student.user.name }}</h4>
+                <p class="student-uni"><i class="fa-solid fa-building-columns"></i> {{ student.university or 'University' }}</p>
+                <div class="skill-tags">
+                    {% for s in student.skills[:3] %}<span class="tag">{{ s.skill.name }}</span>{% endfor %}
+                </div>
+                <a href="{{ url_for('projects.student_public', student_id=student.id) }}" class="btn btn-outline-primary btn-sm w-100">View Profile</a>
+            </div>
+            {% else %}
+            <p class="empty-text">No students found.</p>
+            {% endfor %}
+        </div>
+
+        <h3 class="mt-4">Projects</h3>
+        <div class="card-grid">
+            {% for project in project_results %}
+            <div class="project-card">
+                <h4><a href="{{ url_for('projects.detail', project_id=project.id) }}">{{ project.title }}</a></h4>
+                <p class="project-cat"><i class="fa-solid fa-layer-group"></i> {{ project.category.name if project.category else 'General' }}</p>
+                <div class="project-meta">
+                    <span><i class="fa-solid fa-money-bill-wave"></i> ${{ project.budget }}</span>
+                </div>
+                <a href="{{ url_for('projects.detail', project_id=project.id) }}" class="btn btn-primary btn-sm w-100">View Project</a>
+            </div>
+            {% else %}
+            <p class="empty-text">No projects found.</p>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-text text-center">Type something in the search box above to find students and projects.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

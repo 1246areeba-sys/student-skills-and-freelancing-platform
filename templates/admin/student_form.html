@@ -1,0 +1,60 @@
+{% extends "admin/base.html" %}
+{% set title = 'Edit Student' %}
+{% block admin_content %}
+<div class="panel narrow-panel">
+    <div class="panel-head"><h3>Edit Student — {{ student.user.name }}</h3></div>
+    <form method="post" action="{{ url_for('admin.edit_student', student_id=student.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+        <div class="form-group">
+            <label>University</label>
+            <input type="text" name="university" class="form-control" value="{{ student.university or '' }}">
+        </div>
+        <div class="form-group">
+            <label>Education</label>
+            <textarea name="education" class="form-control" rows="3">{{ student.education or '' }}</textarea>
+        </div>
+        <div class="form-group">
+            <label>Bio</label>
+            <textarea name="bio" class="form-control" rows="3">{{ student.bio or '' }}</textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Experience</label>
+                <select name="experience" class="form-control">
+                    {% for opt in ['Entry Level', 'Intermediate', 'Advanced', 'Expert'] %}
+                    <option value="{{ opt }}" {% if student.experience == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Hourly Rate ($)</label>
+                <input type="number" step="0.01" name="hourly_rate" class="form-control" value="{{ student.hourly_rate or 0 }}">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Availability</label>
+                <select name="availability" class="form-control">
+                    {% for opt in ['Full Time', 'Part Time', 'Weekends'] %}
+                    <option value="{{ opt }}" {% if student.availability == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Languages</label>
+                <input type="text" name="languages" class="form-control" value="{{ student.languages or '' }}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Verification Status</label>
+            <select name="verification_status" class="form-control">
+                {% for opt in ['pending', 'verified', 'rejected'] %}
+                <option value="{{ opt }}" {% if student.verification_status == opt %}selected{% endif %}>{{ opt }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button class="btn btn-primary btn-block">Save Changes</button>
+        <a href="{{ url_for('admin.students') }}" class="btn btn-outline-gold btn-block">Cancel</a>
+    </form>
+</div>
+{% endblock %}

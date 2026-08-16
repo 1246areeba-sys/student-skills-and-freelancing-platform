@@ -1,0 +1,71 @@
+{% extends "dashboard_base.html" %}
+{% block title %}Client Dashboard — {{ platform_name }}{% endblock %}
+{% block page_title %}Client Dashboard{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('client.dashboard') }}" class="sidebar-link active"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+<a href="{{ url_for('client.profile') }}" class="sidebar-link"><i class="fa-solid fa-user"></i> My Profile</a>
+<a href="{{ url_for('client.post_project') }}" class="sidebar-link"><i class="fa-solid fa-plus"></i> Post Project</a>
+<a href="{{ url_for('client.my_projects') }}" class="sidebar-link"><i class="fa-solid fa-briefcase"></i> My Projects</a>
+<a href="{{ url_for('client.all_proposals') }}" class="sidebar-link"><i class="fa-solid fa-paper-plane"></i> Proposals</a>
+<a href="{{ url_for('client.hired_students') }}" class="sidebar-link"><i class="fa-solid fa-user-graduate"></i> Hired Students</a>
+<a href="{{ url_for('client.payments') }}" class="sidebar-link"><i class="fa-solid fa-sack-dollar"></i> Payments</a>
+<a href="{{ url_for('message.inbox') }}" class="sidebar-link"><i class="fa-solid fa-comments"></i> Messages</a>
+<a href="{{ url_for('notification.index') }}" class="sidebar-link"><i class="fa-solid fa-bell"></i> Notifications</a>
+{% endblock %}
+{% block content %}
+<div class="welcome-banner">
+    <div>
+        <h2>Welcome, {{ client.company_name or current_user.name }}! 🏢</h2>
+        <p>Manage your projects, review proposals and hire talented students.</p>
+    </div>
+    <a href="{{ url_for('client.post_project') }}" class="btn btn-gold">Post a New Project</a>
+</div>
+
+<div class="stat-cards">
+    <div class="stat-card"><div class="stat-icon blue"><i class="fa-solid fa-briefcase"></i></div><div><h3>{{ total_posted }}</h3><p>Posted Projects</p></div></div>
+    <div class="stat-card"><div class="stat-icon gold"><i class="fa-solid fa-spinner"></i></div><div><h3>{{ active }}</h3><p>Active</p></div></div>
+    <div class="stat-card"><div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div><div><h3>{{ completed }}</h3><p>Completed</p></div></div>
+    <div class="stat-card"><div class="stat-icon purple"><i class="fa-solid fa-paper-plane"></i></div><div><h3>{{ received_proposals }}</h3><p>Proposals</p></div></div>
+    <div class="stat-card"><div class="stat-icon gold"><i class="fa-solid fa-user-graduate"></i></div><div><h3>{{ hired_count }}</h3><p>Hired</p></div></div>
+    <div class="stat-card"><div class="stat-icon red"><i class="fa-solid fa-sack-dollar"></i></div><div><h3>${{ '%.2f'|format(total_spent) }}</h3><p>Total Spent</p></div></div>
+</div>
+
+<div class="dashboard-grid-2">
+    <div class="panel">
+        <div class="panel-head"><h3>Pending Proposals</h3><a href="{{ url_for('client.all_proposals') }}" class="link-gold">All</a></div>
+        {% if pending_proposals %}
+        <div class="list-items">
+            {% for p in pending_proposals %}
+            <div class="list-item">
+                <div>
+                    <strong>{{ p.student.user.name }}</strong>
+                    <div class="muted small">on {{ p.project.title }} • ${{ p.proposed_price }}</div>
+                </div>
+                <a href="{{ url_for('client.proposals', project_id=p.project_id) }}" class="btn btn-gold btn-sm">Review</a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-text">No pending proposals.</p>
+        {% endif %}
+    </div>
+    <div class="panel">
+        <div class="panel-head"><h3>My Projects</h3><a href="{{ url_for('client.my_projects') }}" class="link-gold">All</a></div>
+        {% if projects %}
+        <div class="list-items">
+            {% for p in projects[:5] %}
+            <div class="list-item">
+                <div>
+                    <strong><a href="{{ url_for('projects.detail', project_id=p.id) }}">{{ p.title }}</a></strong>
+                    <div class="muted small"><span class="status-badge status-{{ p.status }}">{{ p.status }}</span> • ${{ p.budget }}</div>
+                </div>
+                <span class="small">{{ p.proposals.count() }} apps</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-text">No projects yet. <a href="{{ url_for('client.post_project') }}" class="link-gold">Post one</a>.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

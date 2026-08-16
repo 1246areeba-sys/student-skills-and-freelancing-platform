@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ platform_name }}{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="dashboard-body">
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <a href="{{ url_for('home.index') }}" class="brand brand-light">
+                    <span class="brand-logo"><img src="{{ url_for('static', filename='logo.webp') }}" alt="{{ platform_name }} logo"></span>
+                    <span class="brand-name">{{ platform_name }}</span>
+                </a>
+                <button class="sidebar-close" id="sidebarClose"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <nav class="sidebar-nav">
+                {% block sidebar %}{% endblock %}
+            </nav>
+        </aside>
+
+        <!-- Main -->
+        <div class="dashboard-main">
+            <header class="topbar">
+                <button class="sidebar-toggle" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
+                <div class="topbar-title">{% block page_title %}Dashboard{% endblock %}</div>
+                <div class="topbar-actions">
+                    <a href="{{ url_for('notification.index') }}" class="topbar-icon" title="Notifications">
+                        <i class="fa-solid fa-bell"></i>
+                        {% if unread_notifications > 0 %}<span class="badge">{{ unread_notifications }}</span>{% endif %}
+                    </a>
+                    <a href="{{ url_for('message.inbox') }}" class="topbar-icon" title="Messages">
+                        <i class="fa-solid fa-envelope"></i>
+                        {% if unread_messages > 0 %}<span class="badge">{{ unread_messages }}</span>{% endif %}
+                    </a>
+                    <a href="{{ url_for('auth.logout') }}" class="topbar-icon" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></a>
+                </div>
+            </header>
+
+            <div class="flash-container">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} fade-in">
+                                <span>{{ message }}</span>
+                                <button class="alert-close" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            <div class="dashboard-content">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

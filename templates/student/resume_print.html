@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Resume — {{ student.user.name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body { font-family: 'Inter', sans-serif; color: #0F172A; max-width: 800px; margin: 0 auto; padding: 40px; }
+        .r-header { border-bottom: 3px solid #1E3A8A; padding-bottom: 12px; margin-bottom: 20px; }
+        .r-header h1 { color: #1E3A8A; margin: 0; }
+        .r-section { margin-bottom: 22px; }
+        .r-section h3 { color: #1E3A8A; border-bottom: 1px solid #E2E8F0; padding-bottom: 4px; }
+        .r-item { margin-bottom: 6px; }
+        .tag { background: #FEF3C7; color: #92400E; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin: 2px; display: inline-block; }
+        @media print { body { padding: 0; } }
+    </style>
+</head>
+<body>
+    <div class="r-header">
+        <h1>{{ student.user.name }}</h1>
+        <p>{{ student.university or '' }} • {{ student.education or '' }} • {{ student.experience or '' }}</p>
+        <p>{{ student.user.email }} • {{ student.user.phone or '' }} • {{ student.user.city or '' }}</p>
+    </div>
+    <div class="r-section"><h3>Summary</h3><p>{{ student.bio or '' }}</p></div>
+    <div class="r-section"><h3>Skills</h3>{% for s in student.skills %}<span class="tag">{{ s.skill.name }} ({{ s.skill_level }})</span>{% endfor %}</div>
+    <div class="r-section"><h3>Portfolio</h3>{% for item in student.portfolios.all() %}<div class="r-item"><strong>{{ item.title }}</strong> — {{ item.technologies or '' }}</div>{% endfor %}</div>
+    <div class="r-section"><h3>Certifications</h3>{% for c in student.certificates.all() %}<div class="r-item"><strong>{{ c.title }}</strong> — {{ c.organization or '' }} ({{ c.issue_date|date if c.issue_date else '' }})</div>{% endfor %}</div>
+    <div class="r-section"><h3>Languages</h3><p>{{ student.languages or 'English' }}</p></div>
+    <script>window.onload = function(){ setTimeout(function(){ window.print(); }, 400); };</script>
+</body>
+</html>

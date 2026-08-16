@@ -1,0 +1,46 @@
+{% extends "admin/base.html" %}
+{% set title = 'Students' %}
+{% block admin_content %}
+<div class="panel">
+    <table class="admin-table">
+        <thead><tr><th>Student</th><th>University</th><th>Rate</th><th>Skills</th><th>Verification</th><th>Action</th></tr></thead>
+        <tbody>
+        {% for s in students %}
+        <tr>
+            <td>
+                <img src="{{ url_for('static', filename=s.user.display_picture) }}" class="avatar-sm" onerror="this.src='{{ url_for('static', filename='images/default-avatar.png') }}'">
+                {{ s.user.name }}
+            </td>
+            <td class="muted small">{{ s.university or '—' }}</td>
+            <td>${{ s.hourly_rate }}/hr</td>
+            <td>
+                {% for sk in s.skill_names[:4] %}<span class="skill-tag">{{ sk }}</span>{% endfor %}
+            </td>
+            <td>
+                {% if s.is_verified %}
+                <span class="verified-badge"><i class="fa-solid fa-circle-check"></i> Verified</span>
+                {% else %}
+                <span class="badge-status badge-pending">{{ s.verification_status }}</span>
+                {% endif %}
+            </td>
+            <td class="admin-actions">
+                <a href="{{ url_for('projects.student_public', student_id=s.id) }}" class="btn btn-outline-gold btn-sm">View</a>
+                <a href="{{ url_for('admin.edit_student', student_id=s.id) }}" class="btn btn-outline-primary btn-sm">Edit</a>
+                {% if not s.is_verified %}
+                <form method="post" action="{{ url_for('admin.verify_student', student_id=s.id) }}" class="inline-form">
+                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                    <button class="btn btn-primary btn-sm">Verify</button>
+                </form>
+                {% endif %}
+                <form method="post" action="{{ url_for('admin.delete_student', student_id=s.id) }}" class="inline-form" onsubmit="return confirm('Delete this student and their user account?')">
+                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                    <button class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if not students %}<p class="muted empty-inline">No students yet.</p>{% endif %}
+</div>
+{% endblock %}

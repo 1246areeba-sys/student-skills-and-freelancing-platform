@@ -1,0 +1,37 @@
+{% extends "admin/base.html" %}
+{% set title = 'Proposals' %}
+{% block admin_content %}
+<div class="panel">
+    <table class="admin-table">
+        <thead><tr><th>Project</th><th>Student</th><th>Price</th><th>Delivery</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+        <tbody>
+        {% for p in proposals %}
+        <tr>
+            <td><a href="{{ url_for('projects.detail', project_id=p.project_id) }}">{{ p.project.title }}</a></td>
+            <td>{{ p.student.user.name }}</td>
+            <td>{{ p.proposed_price|money }}</td>
+            <td>{{ p.delivery_time }} days</td>
+            <td>
+                <form method="post" action="{{ url_for('admin.proposal_status', proposal_id=p.id) }}" class="inline-form">
+                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                    <select name="status" onchange="this.form.submit()" class="form-control-sm">
+                        {% for opt in ['pending', 'accepted', 'rejected', 'withdrawn'] %}
+                        <option value="{{ opt }}" {% if p.status == opt %}selected{% endif %}>{{ opt }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </td>
+            <td class="muted small">{{ p.created_at|date }}</td>
+            <td class="admin-actions">
+                <form method="post" action="{{ url_for('admin.delete_proposal', proposal_id=p.id) }}" class="inline-form" onsubmit="return confirm('Delete this proposal?')">
+                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                    <button class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if not proposals %}<p class="muted empty-inline">No proposals yet.</p>{% endif %}
+</div>
+{% endblock %}

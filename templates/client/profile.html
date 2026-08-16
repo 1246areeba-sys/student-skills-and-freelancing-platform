@@ -1,0 +1,46 @@
+{% extends "dashboard_base.html" %}
+{% block title %}Client Profile — {{ platform_name }}{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('client.dashboard') }}" class="sidebar-link"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+<a href="{{ url_for('client.profile') }}" class="sidebar-link active"><i class="fa-solid fa-user"></i> My Profile</a>
+<a href="{{ url_for('client.post_project') }}" class="sidebar-link"><i class="fa-solid fa-plus"></i> Post Project</a>
+<a href="{{ url_for('client.my_projects') }}" class="sidebar-link"><i class="fa-solid fa-briefcase"></i> My Projects</a>
+<a href="{{ url_for('client.payments') }}" class="sidebar-link"><i class="fa-solid fa-sack-dollar"></i> Payments</a>
+{% endblock %}
+{% block content %}
+<div class="panel">
+    <div class="panel-head"><h3>Edit Company Profile</h3></div>
+    <form method="post" enctype="multipart/form-data" class="form-card">
+        <div class="form-row">
+            <div class="form-group">
+                <label>Contact Name</label>
+                <input type="text" name="name" class="form-control" value="{{ current_user.name }}">
+            </div>
+            <div class="form-group">
+                <label>Company / Organization</label>
+                <input type="text" name="company" class="form-control" value="{{ client.company_name or '' }}">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="text" name="phone" class="form-control" value="{{ current_user.phone or '' }}">
+            </div>
+            <div class="form-group">
+                <label>City</label>
+                <input type="text" name="city" class="form-control" value="{{ current_user.city or '' }}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <textarea name="description" class="form-control" rows="4">{{ client.description or '' }}</textarea>
+        </div>
+        <div class="form-group">
+            <label>Profile Picture</label>
+            <input type="file" name="profile_picture" class="form-control" accept="image/*">
+        </div>
+        <button type="submit" class="btn btn-gold btn-lg">Save Changes</button>
+    </form>
+</div>
+{% endblock %}

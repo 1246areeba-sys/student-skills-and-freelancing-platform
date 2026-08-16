@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Chat with {{ other.name }} — {{ platform_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/student.css') }}">
+{% endblock %}
+{% block content %}
+<div class="container chat-page">
+    <a href="{{ url_for('message.inbox') }}" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Messages</a>
+
+    <div class="panel chat-panel">
+        <div class="chat-header">
+            <img src="{{ url_for('static', filename=other.display_picture) }}" class="avatar-md" onerror="this.src='{{ url_for('static', filename='images/default-avatar.png') }}'">
+            <div>
+                <strong>{{ other.name }}</strong>
+                <p class="muted small">
+                    {% if other.is_student %}Student{% elif other.is_client %}Client{% endif %}
+                </p>
+            </div>
+        </div>
+
+        <div class="chat-thread" id="chatThread">
+            {% for msg in thread %}
+            <div class="chat-msg {% if msg.sender_id == current_user.id %}own{% endif %}">
+                <p>{{ msg.message }}</p>
+                {% if msg.attachment %}<a href="{{ url_for('static', filename=msg.attachment) }}" target="_blank" class="small"><i class="fa-solid fa-paperclip"></i> Attachment</a>{% endif %}
+                <span class="chat-time">{{ msg.created_at|timeago }}</span>
+            </div>
+            {% else %}
+            <p class="muted">No messages yet. Say hello!</p>
+            {% endfor %}
+        </div>
+
+        {% if shared_projects %}
+        <div class="chat-projects">
+            <span class="muted small">Related projects:</span>
+            {% for p in shared_projects %}
+            <a href="{{ url_for('projects.detail', project_id=p.id) }}" class="chip">{{ p.title }}</a>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post" action="{{ url_for('message.chat', user_id=other.id) }}" enctype="multipart/form-data" class="chat-form">
+            <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+            <input type="text" name="message" class="form-control" placeholder="Type a message..." autofocus>
+            <input type="file" name="attachment" class="chat-file" title="Attach file">
+            <button class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i></button>
+        </form>
+    </div>
+</div>
+{% endblock %}

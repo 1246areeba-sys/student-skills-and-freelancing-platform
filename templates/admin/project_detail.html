@@ -1,0 +1,50 @@
+{% extends "admin/base.html" %}
+{% set title = 'Project Detail' %}
+{% block admin_content %}
+<div class="panel">
+    <div class="panel-head" style="display:flex;justify-content:space-between;align-items:center;">
+        <h3>{{ project.title }}</h3>
+        <a href="{{ url_for('admin.projects') }}" class="btn btn-outline-gold btn-sm">Back to Projects</a>
+    </div>
+
+    <div class="detail-grid">
+        <div class="detail-item"><span class="detail-label">Client</span><span>{{ project.client.company_name or project.client.user.name }}</span></div>
+        <div class="detail-item"><span class="detail-label">Category</span><span>{{ project.category.name if project.category else '—' }}</span></div>
+        <div class="detail-item"><span class="detail-label">Budget</span><span>{{ project.budget|money }}</span></div>
+        <div class="detail-item"><span class="detail-label">Deadline</span><span>{{ project.deadline.isoformat() if project.deadline else '—' }}</span></div>
+        <div class="detail-item"><span class="detail-label">Status</span><span class="badge status-{{ project.status }}">{{ project.status }}</span></div>
+        <div class="detail-item"><span class="detail-label">Project Type</span><span>{{ project.project_type }}</span></div>
+        <div class="detail-item"><span class="detail-label">Location Type</span><span>{{ project.location_type }}</span></div>
+        <div class="detail-item"><span class="detail-label">Location</span><span>{{ project.location or '—' }}</span></div>
+        <div class="detail-item"><span class="detail-label">Freelancers Needed</span><span>{{ project.freelancers_needed }}</span></div>
+        <div class="detail-item"><span class="detail-label">Proposals</span><span>{{ project.proposal_count }}</span></div>
+        <div class="detail-item"><span class="detail-label">Created</span><span>{{ project.created_at.strftime('%Y-%m-%d %H:%M') if project.created_at else '—' }}</span></div>
+    </div>
+
+    <div class="detail-section">
+        <h4>Description</h4>
+        <p class="detail-desc">{{ project.description }}</p>
+    </div>
+
+    <div class="detail-section">
+        <h4>Required Skills</h4>
+        {% if project.skill_names %}
+        <div class="skill-tags">
+            {% for name in project.skill_names %}
+            <span class="skill-tag">{{ name }}</span>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="muted">No skills specified.</p>
+        {% endif %}
+    </div>
+
+    <div class="detail-actions">
+        <a href="{{ url_for('admin.edit_project', project_id=project.id) }}" class="btn btn-outline-primary">Edit</a>
+        <form method="post" action="{{ url_for('admin.delete_project', project_id=project.id) }}" class="inline-form" onsubmit="return confirm('Delete this project?')">
+            <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+            <button class="btn btn-outline-danger">Delete</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

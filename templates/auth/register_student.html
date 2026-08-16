@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Student Registration — {{ platform_name }}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">{% endblock %}
+{% block content %}
+<section class="auth-section">
+    <div class="container">
+        <div class="auth-card auth-card-wide">
+            <div class="auth-header">
+                <h2>Join as a Student</h2>
+                <p>Create your profile and start finding freelance projects.</p>
+            </div>
+            <form method="post" enctype="multipart/form-data" class="auth-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" name="name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" name="email" class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Password *</label>
+                        <input type="password" name="password" class="form-control" minlength="8" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm Password *</label>
+                        <input type="password" name="confirm_password" class="form-control" minlength="8" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>University / College *</label>
+                        <input type="text" name="university" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Education</label>
+                        <input type="text" name="education" class="form-control" placeholder="e.g. BSc Computer Science">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="text" name="phone" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>City</label>
+                        <input type="text" name="city" class="form-control">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Student ID</label>
+                        <input type="text" name="student_id" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>University Email</label>
+                        <input type="email" name="university_email" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Skills (comma separated)</label>
+                    <input type="text" name="skills" class="form-control" placeholder="Python, Web Development, UI/UX Design">
+                </div>
+                <div class="form-group">
+                    <label>Profile Picture</label>
+                    <input type="file" name="profile_picture" class="form-control" accept="image/*">
+                </div>
+                <button type="submit" class="btn btn-gold btn-block btn-lg">Create Student Account</button>
+            </form>
+            <div class="auth-footer">
+                <p>Already have an account? <a href="{{ url_for('auth.login') }}" class="link-gold">Login</a></p>
+                <p>Are you a client? <a href="{{ url_for('auth.register_client') }}" class="link-gold">Register here</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

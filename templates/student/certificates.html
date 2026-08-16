@@ -1,0 +1,72 @@
+{% extends "dashboard_base.html" %}
+{% block title %}Certificates — {{ platform_name }}{% endblock %}
+{% block page_title %}Certificates & Achievements{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('student.dashboard') }}" class="sidebar-link"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+<a href="{{ url_for('student.profile') }}" class="sidebar-link"><i class="fa-solid fa-user"></i> My Profile</a>
+<a href="{{ url_for('student.portfolio') }}" class="sidebar-link"><i class="fa-solid fa-images"></i> Portfolio</a>
+<a href="{{ url_for('student.certificates') }}" class="sidebar-link active"><i class="fa-solid fa-certificate"></i> Certificates</a>
+<a href="{{ url_for('student.assessments') }}" class="sidebar-link"><i class="fa-solid fa-clipboard-check"></i> Skill Assessments</a>
+{% endblock %}
+{% block content %}
+<div class="panel">
+    <div class="panel-head"><h3>Add Certificate / Achievement</h3></div>
+    <form method="post" enctype="multipart/form-data" class="form-card">
+        <div class="form-row">
+            <div class="form-group">
+                <label>Certificate Title *</label>
+                <input type="text" name="title" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Issuing Organization</label>
+                <input type="text" name="organization" class="form-control">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Issue Date</label>
+                <input type="date" name="issue_date" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Credential ID</label>
+                <input type="text" name="credential_id" class="form-control">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Verification URL</label>
+            <input type="url" name="verification_url" class="form-control">
+        </div>
+        <div class="form-group">
+            <label>Certificate File (PDF/Image)</label>
+            <input type="file" name="certificate_file" class="form-control" accept=".pdf,image/*">
+        </div>
+        <button type="submit" class="btn btn-gold btn-lg">Add Certificate</button>
+    </form>
+</div>
+
+<div class="panel">
+    <div class="panel-head"><h3>My Certificates ({{ student.certificates.count() }})</h3></div>
+    {% if student.certificates.count() %}
+    <div class="card-grid">
+        {% for c in student.certificates.all() %}
+        <div class="cert-card">
+            <div class="cert-icon"><i class="fa-solid fa-award"></i></div>
+            <h5>{{ c.title }}</h5>
+            <p class="muted small">{{ c.organization or '' }}</p>
+            <p class="small">{{ c.issue_date|date if c.issue_date else '' }}</p>
+            {% if c.verified %}<span class="badge-verified-sm"><i class="fa-solid fa-circle-check"></i> Verified</span>{% endif %}
+            <div class="cert-actions">
+                {% if c.certificate_file %}<a href="{{ url_for('static', filename=c.certificate_file) }}" target="_blank" class="btn btn-outline-primary btn-sm">View</a>{% endif %}
+                {% if c.verification_url %}<a href="{{ c.verification_url }}" target="_blank" class="btn btn-outline-gold btn-sm">Verify</a>{% endif %}
+                <form method="post" action="{{ url_for('student.delete_certificate', cert_id=c.id) }}" class="inline-form" onsubmit="return confirm('Delete certificate?')">
+                    <button class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty-text">No certificates added yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

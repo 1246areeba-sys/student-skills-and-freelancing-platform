@@ -1,0 +1,27 @@
+{% extends "dashboard_base.html" %}
+{% block title %}Take Assessment — {{ platform_name }}{% endblock %}
+{% block page_title %}{{ assessment.title }}{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('student.dashboard') }}" class="sidebar-link"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+<a href="{{ url_for('student.assessments') }}" class="sidebar-link active"><i class="fa-solid fa-clipboard-check"></i> Skill Assessments</a>
+{% endblock %}
+{% block content %}
+<div class="panel">
+    <div class="panel-head">
+        <h3>{{ assessment.title }}</h3>
+        <span class="muted">{{ assessment.questions.count() }} questions • Pass mark {{ assessment.passing_score }}%</span>
+    </div>
+    <form method="post" class="form-card">
+        {% for q in assessment.questions.all() %}
+        <div class="question-block">
+            <p class="question-text"><strong>{{ loop.index }}.</strong> {{ q.question }}</p>
+            <label class="option"><input type="radio" name="q_{{ q.id }}" value="A" required> {{ q.option_a }}</label>
+            <label class="option"><input type="radio" name="q_{{ q.id }}" value="B"> {{ q.option_b }}</label>
+            {% if q.option_c %}<label class="option"><input type="radio" name="q_{{ q.id }}" value="C"> {{ q.option_c }}</label>{% endif %}
+            {% if q.option_d %}<label class="option"><input type="radio" name="q_{{ q.id }}" value="D"> {{ q.option_d }}</label>{% endif %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-gold btn-lg">Submit Assessment</button>
+    </form>
+</div>
+{% endblock %}

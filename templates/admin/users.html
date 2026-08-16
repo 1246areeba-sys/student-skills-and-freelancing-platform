@@ -1,0 +1,55 @@
+{% extends "admin/base.html" %}
+{% set title = 'Users' %}
+{% block admin_content %}
+<div class="panel">
+    <form method="get" action="{{ url_for('admin.users') }}" class="admin-filter-bar">
+        <select name="role" class="form-control">
+            <option value="">All Roles</option>
+            <option value="student" {% if role == 'student' %}selected{% endif %}>Student</option>
+            <option value="client" {% if role == 'client' %}selected{% endif %}>Client</option>
+            <option value="admin" {% if role == 'admin' %}selected{% endif %}>Admin</option>
+        </select>
+        <input type="text" name="q" class="form-control" placeholder="Search name or email..." value="{{ q }}">
+        <button class="btn btn-primary btn-sm">Search</button>
+        <a href="{{ url_for('admin.users') }}" class="btn btn-outline-gold btn-sm">Reset</a>
+    </form>
+
+    <table class="admin-table">
+        <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Joined</th><th>Actions</th></tr></thead>
+        <tbody>
+        {% for u in users %}
+        <tr>
+            <td>
+                <img src="{{ url_for('static', filename=u.display_picture) }}" class="avatar-sm" onerror="this.src='{{ url_for('static', filename='images/default-avatar.png') }}'">
+                {{ u.name }}
+            </td>
+            <td class="muted small">{{ u.email }}</td>
+            <td>
+                <form method="post" action="{{ url_for('admin.change_role', user_id=u.id) }}" class="inline-form">
+                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                    <select name="role" onchange="this.form.submit()" class="form-control-sm">
+                        <option value="student" {% if u.role == 'student' %}selected{% endif %}>Student</option>
+                        <option value="client" {% if u.role == 'client' %}selected{% endif %}>Client</option>
+                        <option value="admin" {% if u.role == 'admin' %}selected{% endif %}>Admin</option>
+                    </select>
+                </form>
+            </td>
+            <td><span class="badge-status badge-{{ u.status }}">{{ u.status }}</span></td>
+            <td class="muted small">{{ u.created_at|date }}</td>
+            <td class="admin-actions">
+                <form method="post" action="{{ url_for('admin.toggle_user_status', user_id=u.id) }}" class="inline-form">
+                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                    <button class="btn btn-outline-gold btn-sm">{% if u.status == 'active' %}Suspend{% else %}Activate{% endif %}</button>
+                </form>
+                <form method="post" action="{{ url_for('admin.delete_user', user_id=u.id) }}" class="inline-form" onsubmit="return confirm('Delete this user permanently?')">
+                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                    <button class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if not users %}<p class="muted empty-inline">No users found.</p>{% endif %}
+</div>
+{% endblock %}

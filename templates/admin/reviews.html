@@ -1,0 +1,27 @@
+{% extends "admin/base.html" %}
+{% set title = 'Reviews' %}
+{% block admin_content %}
+<div class="panel">
+    <table class="admin-table">
+        <thead><tr><th>Project</th><th>Reviewer</th><th>Reviewed</th><th>Rating</th><th>Review</th><th>Action</th></tr></thead>
+        <tbody>
+        {% for r in reviews %}
+        <tr>
+            <td><a href="{{ url_for('projects.detail', project_id=r.project_id) }}">{{ r.project.title }}</a></td>
+            <td>{{ r.reviewer.name }}</td>
+            <td>{{ r.reviewed_user.name }}</td>
+            <td><span class="rating-stars">{{ star_rating(r.rating) }}</span></td>
+            <td class="muted small">{{ r.review[:80] if r.review else '—' }}</td>
+            <td class="admin-actions">
+                <form method="post" action="{{ url_for('admin.delete_review', review_id=r.id) }}" class="inline-form" onsubmit="return confirm('Delete this review?')">
+                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                    <button class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if not reviews %}<p class="muted empty-inline">No reviews yet.</p>{% endif %}
+</div>
+{% endblock %}

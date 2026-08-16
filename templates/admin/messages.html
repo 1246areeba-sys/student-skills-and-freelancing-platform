@@ -1,0 +1,28 @@
+{% extends "admin/base.html" %}
+{% set title = 'Messages' %}
+{% block admin_content %}
+<div class="panel">
+    <table class="admin-table">
+        <thead><tr><th>From</th><th>To</th><th>Project</th><th>Message</th><th>Read</th><th>Date</th><th>Action</th></tr></thead>
+        <tbody>
+        {% for m in messages %}
+        <tr>
+            <td>{{ m.sender.name if m.sender else '—' }}</td>
+            <td>{{ m.receiver.name if m.receiver else '—' }}</td>
+            <td class="muted small">{% if m.project %}<a href="{{ url_for('projects.detail', project_id=m.project_id) }}">{{ m.project.title }}</a>{% else %}—{% endif %}</td>
+            <td class="muted small">{{ m.message[:80] }}{% if m.message and m.message|length > 80 %}…{% endif %}</td>
+            <td>{% if m.is_read %}<span class="badge-status badge-verified">Read</span>{% else %}<span class="badge-status badge-pending">Unread</span>{% endif %}</td>
+            <td class="muted small">{{ m.created_at|datetime }}</td>
+            <td class="admin-actions">
+                <form method="post" action="{{ url_for('admin.delete_message', message_id=m.id) }}" class="inline-form" onsubmit="return confirm('Delete this message?')">
+                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                    <button class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if not messages %}<p class="muted empty-inline">No messages yet.</p>{% endif %}
+</div>
+{% endblock %}

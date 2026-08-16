@@ -1,0 +1,56 @@
+{% extends "dashboard_base.html" %}
+{% block title %}Skill Assessments — {{ platform_name }}{% endblock %}
+{% block page_title %}Skill Assessments{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('student.dashboard') }}" class="sidebar-link"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+<a href="{{ url_for('student.profile') }}" class="sidebar-link"><i class="fa-solid fa-user"></i> My Profile</a>
+<a href="{{ url_for('student.skills') }}" class="sidebar-link"><i class="fa-solid fa-star"></i> My Skills</a>
+<a href="{{ url_for('student.certificates') }}" class="sidebar-link"><i class="fa-solid fa-certificate"></i> Certificates</a>
+<a href="{{ url_for('student.assessments') }}" class="sidebar-link active"><i class="fa-solid fa-clipboard-check"></i> Skill Assessments</a>
+{% endblock %}
+{% block content %}
+<div class="panel">
+    <div class="panel-head"><h3>Available Assessments</h3></div>
+    {% if assessments %}
+    <div class="card-grid">
+        {% for a in assessments %}
+        <div class="assessment-card">
+            <div class="assessment-icon"><i class="fa-solid fa-clipboard-question"></i></div>
+            <h5>{{ a.title }}</h5>
+            <p class="muted small">{{ a.description or '' }}</p>
+            <div class="assessment-meta">
+                <span><i class="fa-solid fa-list"></i> {{ a.questions.count() }} questions</span>
+                <span><i class="fa-solid fa-clock"></i> {{ a.duration_minutes }} min</span>
+                <span><i class="fa-solid fa-bullseye"></i> Pass {{ a.passing_score }}%</span>
+            </div>
+            {% set res = results.get(a.id) %}
+            {% if res %}
+                <span class="badge-level {{ 'passed' if res.passed }}">{{ res.percentage }}% {{ 'Passed' if res.passed else 'Failed' }}</span>
+            {% else %}
+                <a href="{{ url_for('student.take_assessment', assessment_id=a.id) }}" class="btn btn-gold btn-sm">Take Assessment</a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty-text">No assessments available yet.</p>
+    {% endif %}
+</div>
+
+{% if results %}
+<div class="panel">
+    <div class="panel-head"><h3>My Results</h3></div>
+    <div class="list-items">
+        {% for aid, res in results.items() %}
+        <div class="list-item">
+            <div>
+                <strong>{{ res.assessment.title }}</strong>
+                <div class="muted small">Score: {{ res.score }} • {{ res.percentage }}%</div>
+            </div>
+            <span class="badge-level {{ 'passed' if res.passed }}">{{ 'Passed' if res.passed else 'Failed' }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

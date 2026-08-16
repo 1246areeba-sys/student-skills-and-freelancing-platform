@@ -1,0 +1,46 @@
+{% extends "dashboard_base.html" %}
+{% block title %}My Projects — {{ platform_name }}{% endblock %}
+{% block page_title %}My Projects{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('client.dashboard') }}" class="sidebar-link"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+<a href="{{ url_for('client.profile') }}" class="sidebar-link"><i class="fa-solid fa-user"></i> My Profile</a>
+<a href="{{ url_for('client.post_project') }}" class="sidebar-link"><i class="fa-solid fa-plus"></i> Post Project</a>
+<a href="{{ url_for('client.my_projects') }}" class="sidebar-link active"><i class="fa-solid fa-briefcase"></i> My Projects</a>
+<a href="{{ url_for('client.all_proposals') }}" class="sidebar-link"><i class="fa-solid fa-paper-plane"></i> Proposals</a>
+{% endblock %}
+{% block content %}
+<div class="panel-head row-between mb-3">
+    <h3>My Projects ({{ projects|length }})</h3>
+    <a href="{{ url_for('client.post_project') }}" class="btn btn-gold"><i class="fa-solid fa-plus"></i> Post Project</a>
+</div>
+{% if projects %}
+<div class="card-grid">
+    {% for p in projects %}
+    <div class="project-card">
+        <div class="project-top">
+            <span class="badge-type">{{ p.project_type }}</span>
+            <span class="status-badge status-{{ p.status }}">{{ p.status }}</span>
+        </div>
+        <h4><a href="{{ url_for('projects.detail', project_id=p.id) }}">{{ p.title }}</a></h4>
+        <p class="project-cat"><i class="fa-solid fa-layer-group"></i> {{ p.category.name if p.category else 'General' }}</p>
+        <div class="skill-tags">{% for ps in p.required_skills[:4] %}<span class="tag">{{ ps.skill.name }}</span>{% endfor %}</div>
+        <div class="project-meta">
+            <span><i class="fa-solid fa-money-bill-wave"></i> ${{ p.budget }}</span>
+            <span><i class="fa-solid fa-paper-plane"></i> {{ p.proposals.count() }}</span>
+        </div>
+        <div class="project-actions">
+            <a href="{{ url_for('projects.detail', project_id=p.id) }}" class="btn btn-primary btn-sm">View</a>
+            <a href="{{ url_for('client.proposals', project_id=p.id) }}" class="btn btn-gold btn-sm">Proposals</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <i class="fa-solid fa-briefcase"></i>
+    <h4>No projects yet</h4>
+    <p>Post your first project to start receiving proposals.</p>
+    <a href="{{ url_for('client.post_project') }}" class="btn btn-gold">Post a Project</a>
+</div>
+{% endif %}
+{% endblock %}

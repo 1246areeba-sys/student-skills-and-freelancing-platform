@@ -1,0 +1,53 @@
+{% extends "dashboard_base.html" %}
+{% block title %}Portfolio — {{ platform_name }}{% endblock %}
+{% block page_title %}Portfolio{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('student.dashboard') }}" class="sidebar-link"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+<a href="{{ url_for('student.profile') }}" class="sidebar-link"><i class="fa-solid fa-user"></i> My Profile</a>
+<a href="{{ url_for('student.skills') }}" class="sidebar-link"><i class="fa-solid fa-star"></i> My Skills</a>
+<a href="{{ url_for('student.portfolio') }}" class="sidebar-link active"><i class="fa-solid fa-images"></i> Portfolio</a>
+<a href="{{ url_for('student.add_portfolio') }}" class="sidebar-link"><i class="fa-solid fa-plus"></i> Add Portfolio Item</a>
+<a href="{{ url_for('student.certificates') }}" class="sidebar-link"><i class="fa-solid fa-certificate"></i> Certificates</a>
+{% endblock %}
+{% block content %}
+<div class="panel-head row-between mb-3">
+    <h3>My Portfolio ({{ student.portfolios.count() }})</h3>
+    <a href="{{ url_for('student.add_portfolio') }}" class="btn btn-gold"><i class="fa-solid fa-plus"></i> Add Portfolio Item</a>
+</div>
+
+{% if student.portfolios.count() %}
+<div class="card-grid">
+    {% for item in student.portfolios.all() %}
+    <div class="portfolio-card">
+        {% if item.image %}
+        <img src="{{ url_for('static', filename=item.image) }}" alt="portfolio" class="portfolio-img">
+        {% else %}
+        <div class="portfolio-img placeholder"><i class="fa-solid fa-image"></i></div>
+        {% endif %}
+        <div class="portfolio-body">
+            <h5>{{ item.title }}</h5>
+            <p class="muted small">{{ item.description[:100] if item.description else '' }}</p>
+            <div class="skill-tags">
+                {% for t in item.tech_list %}<span class="tag">{{ t }}</span>{% endfor %}
+            </div>
+            <div class="portfolio-actions">
+                {% if item.project_url %}<a href="{{ item.project_url }}" target="_blank" class="btn btn-outline-primary btn-sm"><i class="fa-solid fa-globe"></i> Demo</a>{% endif %}
+                {% if item.github_url %}<a href="{{ item.github_url }}" target="_blank" class="btn btn-outline-dark btn-sm"><i class="fa-brands fa-github"></i> Code</a>{% endif %}
+                <a href="{{ url_for('student.edit_portfolio', item_id=item.id) }}" class="btn btn-outline-gold btn-sm"><i class="fa-solid fa-pen"></i></a>
+                <form method="post" action="{{ url_for('student.delete_portfolio', item_id=item.id) }}" class="inline-form" onsubmit="return confirm('Delete this item?')">
+                    <button class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <i class="fa-solid fa-images"></i>
+    <h4>No portfolio items yet</h4>
+    <p>Showcase your best work to attract clients.</p>
+    <a href="{{ url_for('student.add_portfolio') }}" class="btn btn-gold">Add Your First Project</a>
+</div>
+{% endif %}
+{% endblock %}

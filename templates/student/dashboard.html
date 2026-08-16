@@ -1,0 +1,136 @@
+{% extends "dashboard_base.html" %}
+{% block title %}Student Dashboard — {{ platform_name }}{% endblock %}
+{% block page_title %}Student Dashboard{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('student.dashboard') }}" class="sidebar-link active"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+<a href="{{ url_for('student.profile') }}" class="sidebar-link"><i class="fa-solid fa-user"></i> My Profile</a>
+<a href="{{ url_for('student.skills') }}" class="sidebar-link"><i class="fa-solid fa-star"></i> My Skills</a>
+<a href="{{ url_for('student.portfolio') }}" class="sidebar-link"><i class="fa-solid fa-images"></i> Portfolio</a>
+<a href="{{ url_for('projects.projects') }}" class="sidebar-link"><i class="fa-solid fa-briefcase"></i> Find Projects</a>
+<a href="{{ url_for('student.applications') }}" class="sidebar-link"><i class="fa-solid fa-paper-plane"></i> My Applications</a>
+<a href="{{ url_for('projects.workspace', project_id=0) }}" class="sidebar-link" onclick="return false"><i class="fa-solid fa-folder-open"></i> Active Projects</a>
+<a href="{{ url_for('message.inbox') }}" class="sidebar-link"><i class="fa-solid fa-comments"></i> Messages</a>
+<a href="{{ url_for('notification.index') }}" class="sidebar-link"><i class="fa-solid fa-bell"></i> Notifications</a>
+<a href="{{ url_for('student.earnings') }}" class="sidebar-link"><i class="fa-solid fa-sack-dollar"></i> Earnings</a>
+<a href="{{ url_for('student.certificates') }}" class="sidebar-link"><i class="fa-solid fa-certificate"></i> Certificates</a>
+<a href="{{ url_for('student.assessments') }}" class="sidebar-link"><i class="fa-solid fa-clipboard-check"></i> Skill Assessments</a>
+<a href="{{ url_for('student.resume_builder') }}" class="sidebar-link"><i class="fa-solid fa-file-lines"></i> Resume Builder</a>
+<a href="{{ url_for('student.wishlist') }}" class="sidebar-link"><i class="fa-solid fa-heart"></i> Wishlist</a>
+{% endblock %}
+{% block content %}
+<div class="welcome-banner">
+    <div>
+        <h2>Welcome back, {{ current_user.name.split(' ')[0] }}! 👋</h2>
+        <p>Here's what's happening with your freelancing journey.</p>
+    </div>
+    <a href="{{ url_for('projects.projects') }}" class="btn btn-gold">Find New Projects</a>
+</div>
+
+<div class="profile-completion">
+    <div class="pc-header">
+        <span>Profile Completion</span>
+        <strong class="text-gold">{{ completion }}%</strong>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:{{ completion }}%"></div></div>
+</div>
+
+<div class="stat-cards">
+    <div class="stat-card">
+        <div class="stat-icon blue"><i class="fa-solid fa-briefcase"></i></div>
+        <div><h3>{{ total_projects }}</h3><p>Total Projects</p></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon gold"><i class="fa-solid fa-spinner"></i></div>
+        <div><h3>{{ active_projects }}</h3><p>Active Projects</p></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
+        <div><h3>{{ completed_projects }}</h3><p>Completed</p></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon gold"><i class="fa-solid fa-sack-dollar"></i></div>
+        <div><h3>${{ '%.2f'|format(total_earnings) }}</h3><p>Total Earnings</p></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon blue"><i class="fa-solid fa-star"></i></div>
+        <div><h3>{{ avg_rating }}</h3><p>Avg Rating</p></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon purple"><i class="fa-solid fa-paper-plane"></i></div>
+        <div><h3>{{ proposals_sent }}</h3><p>Proposals Sent</p></div>
+    </div>
+</div>
+
+<div class="dashboard-grid-2">
+    <div class="panel">
+        <div class="panel-head"><h3>Recommended Projects</h3><a href="{{ url_for('projects.projects') }}" class="link-gold">View all</a></div>
+        {% if recommended %}
+        <div class="list-items">
+            {% for p in recommended %}
+            <div class="list-item">
+                <div>
+                    <strong><a href="{{ url_for('projects.detail', project_id=p.id) }}">{{ p.title }}</a></strong>
+                    <div class="muted small">${{ p.budget }} • {{ p.category.name if p.category else 'General' }}</div>
+                </div>
+                <a href="{{ url_for('proposal.apply', project_id=p.id) }}" class="btn btn-gold btn-sm">Apply</a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-text">Add skills to get matched with projects.</p>
+        {% endif %}
+    </div>
+
+    <div class="panel">
+        <div class="panel-head"><h3>Recent Notifications</h3><a href="{{ url_for('notification.index') }}" class="link-gold">All</a></div>
+        {% if notifications %}
+        <div class="list-items">
+            {% for n in notifications %}
+            <div class="list-item {{ 'unread' if not n.is_read }}">
+                <div>
+                    <strong>{{ n.title }}</strong>
+                    <div class="muted small">{{ n.message }}</div>
+                </div>
+                <span class="small text-gold">{{ n.created_at|timeago }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-text">No notifications yet.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="dashboard-grid-2">
+    <div class="panel">
+        <div class="panel-head"><h3>Recent Messages</h3><a href="{{ url_for('message.inbox') }}" class="link-gold">Open</a></div>
+        {% if recent_messages %}
+        <div class="list-items">
+            {% for m in recent_messages %}
+            <div class="list-item">
+                <div>
+                    <strong>{{ 'You' if m.sender_id == current_user.id else m.sender.name }}</strong>
+                    <div class="muted small">{{ (m.message or 'Attachment')[:50] }}</div>
+                </div>
+                <span class="small">{{ m.created_at|timeago }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-text">No messages yet.</p>
+        {% endif %}
+    </div>
+
+    <div class="panel">
+        <div class="panel-head"><h3>Quick Stats</h3></div>
+        <div class="quick-stats">
+            <div><span class="big">{{ proposals_accepted }}</span><p>Proposals Accepted</p></div>
+            <div><span class="big">{{ saved_projects }}</span><p>Saved Projects</p></div>
+        </div>
+        <div class="panel-actions">
+            <a href="{{ url_for('student.resume_builder') }}" class="btn btn-outline-primary btn-sm">Build Resume</a>
+            <a href="{{ url_for('student.assessments') }}" class="btn btn-outline-gold btn-sm">Take Assessment</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}{{ project.title }} — {{ platform_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/student.css') }}">
+{% endblock %}
+{% block content %}
+<div class="container project-detail">
+    <a href="{{ url_for('projects.projects') }}" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Projects</a>
+
+    <div class="detail-layout">
+        <div class="detail-main">
+            <div class="panel">
+                <div class="project-card-head">
+                    <span class="badge-type">{{ project.project_type }}</span>
+                    <span class="badge-status badge-{{ project.status }}">{{ project.status.replace('_',' ') }}</span>
+                </div>
+                <h1 class="detail-title">{{ project.title }}</h1>
+                <p class="muted">
+                    <i class="fa-solid fa-user-tie"></i> {{ project.client.company_name or project.client.user.name }}
+                    &middot; {{ project.category.name if project.category else 'General' }}
+                    &middot; {{ project.location_type }}
+                </p>
+
+                <h4 class="section-label">Description</h4>
+                <p class="detail-desc">{{ project.description }}</p>
+
+                <h4 class="section-label">Required Skills</h4>
+                <div class="skill-tags">
+                    {% for sk in project.skill_names %}
+                    <span class="skill-tag">{{ sk }}</span>
+                    {% endfor %}
+                </div>
+
+                {% if project.attachment %}
+                <h4 class="section-label">Attachment</h4>
+                <a href="{{ url_for('static', filename=project.attachment) }}" class="btn btn-outline-gold btn-sm" target="_blank"><i class="fa-solid fa-paperclip"></i> Download File</a>
+                {% endif %}
+
+                {% if project.location %}
+                <h4 class="section-label">Location</h4>
+                <p>{{ project.location }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Proposals (visible to client owner) -->
+            {% if current_user.is_authenticated and current_user.is_client and project.client_id == current_user.client_profile.id %}
+            <div class="panel">
+                <div class="panel-head"><h3>Proposals ({{ proposals|length }})</h3></div>
+                {% if proposals %}
+                <div class="proposal-list">
+                    {% for p in proposals %}
+                    <div class="proposal-item">
+                        <img src="{{ url_for('static', filename=p.student.user.display_picture) }}" class="avatar-sm" onerror="this.src='{{ url_for('static', filename='images/default-avatar.png') }}'">
+                        <div class="proposal-body">
+                            <div class="proposal-meta">
+                                <a href="{{ url_for('projects.student_public', student_id=p.student.id) }}"><strong>{{ p.student.user.name }}</strong></a>
+                                <span class="text-gold">{{ p.proposed_price|money }}</span>
+                                <span class="muted small">{{ p.delivery_time }} days</span>
+                                <span class="badge-status badge-{{ p.status }}">{{ p.status }}</span>
+                            </div>
+                            <p class="small">{{ p.cover_letter[:200] }}{% if p.cover_letter|length > 200 %}...{% endif %}</p>
+                            <div class="proposal-actions">
+                                <a href="{{ url_for('message.chat', user_id=p.student.user.id, project_id=project.id) }}" class="btn btn-outline-gold btn-sm"><i class="fa-solid fa-comment"></i> Message</a>
+                                {% if p.status == 'pending' %}
+                                <form method="post" action="{{ url_for('client.accept_proposal', proposal_id=p.id) }}" class="inline-form">
+                                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                                    <button class="btn btn-primary btn-sm">Accept</button>
+                                </form>
+                                <form method="post" action="{{ url_for('client.reject_proposal', proposal_id=p.id) }}" class="inline-form">
+                                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                                    <button class="btn btn-outline-danger btn-sm">Reject</button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="muted">No proposals yet.</p>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <aside class="detail-side">
+            <div class="panel">
+                <div class="stat-row"><span>Budget</span><strong class="text-gold">{{ project.budget|money }}</strong></div>
+                <div class="stat-row"><span>Type</span><strong>{{ project.project_type }}</strong></div>
+                <div class="stat-row"><span>Location</span><strong>{{ project.location_type }}</strong></div>
+                {% if project.deadline %}
+                <div class="stat-row"><span>Deadline</span><strong>{{ project.deadline|date }}</strong></div>
+                <div class="stat-row"><span>Time Left</span><strong>{{ project.deadline|days_left }}</strong></div>
+                {% endif %}
+                <div class="stat-row"><span>Freelancers</span><strong>{{ project.freelancers_needed }}</strong></div>
+                <div class="stat-row"><span>Proposals</span><strong>{{ project.proposal_count }}</strong></div>
+
+                {% if current_user.is_authenticated and current_user.is_student %}
+                    {% if is_hired %}
+                        <a href="{{ url_for('projects.workspace', project_id=project.id) }}" class="btn btn-primary btn-block"><i class="fa-solid fa-briefcase"></i> Go to Workspace</a>
+                    {% elif already_applied %}
+                        <button class="btn btn-outline-gold btn-block" disabled>Already Applied</button>
+                    {% elif project.is_open %}
+                        <a href="{{ url_for('proposal.apply', project_id=project.id) }}" class="btn btn-gold btn-block"><i class="fa-solid fa-paper-plane"></i> Apply Now</a>
+                    {% else %}
+                        <button class="btn btn-outline-gold btn-block" disabled>Closed</button>
+                    {% endif %}
+                    <form method="post" action="{{ url_for('projects.toggle_wishlist') }}" class="inline-form btn-block">
+                        <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                        <input type="hidden" name="item_type" value="project">
+                        <input type="hidden" name="item_id" value="{{ project.id }}">
+                        <button class="btn btn-outline-danger btn-block"><i class="fa-solid fa-heart"></i> Save to Wishlist</button>
+                    </form>
+                {% elif not current_user.is_authenticated %}
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-block">Login to Apply</a>
+                {% endif %}
+            </div>
+
+            {% if match is not none %}
+            <div class="panel match-panel">
+                <h4><i class="fa-solid fa-wand-magic-sparkles"></i> Skill Match</h4>
+                <div class="match-score">{{ match.score|round|int }}%</div>
+                <div class="progress-bar"><div class="progress-fill" style="width:{{ match.score|round|int }}%"></div></div>
+                <p class="muted small">Based on your skills vs. required skills.</p>
+            </div>
+            {% endif %}
+
+            <div class="panel">
+                <h4>About the Client</h4>
+                <p><strong>{{ project.client.company_name or project.client.user.name }}</strong></p>
+                <p class="muted small">{{ project.client.description or 'No description provided.' }}</p>
+                {% if project.client.city %}<p class="muted small"><i class="fa-solid fa-location-dot"></i> {{ project.client.city }}</p>{% endif %}
+            </div>
+        </aside>
+    </div>
+</div>
+{% endblock %}

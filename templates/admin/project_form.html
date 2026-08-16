@@ -1,0 +1,77 @@
+{% extends "admin/base.html" %}
+{% set title = 'Edit Project' %}
+{% block admin_content %}
+<div class="panel narrow-panel">
+    <div class="panel-head"><h3>Edit Project — {{ project.title }}</h3></div>
+    <form method="post" action="{{ url_for('admin.edit_project', project_id=project.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+        <div class="form-group">
+            <label>Title</label>
+            <input type="text" name="title" class="form-control" value="{{ project.title }}" required>
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <textarea name="description" class="form-control" rows="4">{{ project.description or '' }}</textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Budget ($)</label>
+                <input type="number" step="0.01" name="budget" class="form-control" value="{{ project.budget or 0 }}">
+            </div>
+            <div class="form-group">
+                <label>Deadline</label>
+                <input type="date" name="deadline" class="form-control" value="{{ project.deadline.isoformat() if project.deadline else '' }}">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Category</label>
+                <select name="category_id" class="form-control">
+                    <option value="">— None —</option>
+                    {% for c in categories %}
+                    <option value="{{ c.id }}" {% if project.category_id == c.id %}selected{% endif %}>{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <select name="status" class="form-control">
+                    {% for opt in ['draft', 'open', 'in_progress', 'completed', 'cancelled', 'closed'] %}
+                    <option value="{{ opt }}" {% if project.status == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Project Type</label>
+                <select name="project_type" class="form-control">
+                    {% for opt in ['Fixed', 'Hourly'] %}
+                    <option value="{{ opt }}" {% if project.project_type == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Location Type</label>
+                <select name="location_type" class="form-control">
+                    {% for opt in ['Remote', 'Onsite', 'Hybrid'] %}
+                    <option value="{{ opt }}" {% if project.location_type == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" name="location" class="form-control" value="{{ project.location or '' }}">
+            </div>
+            <div class="form-group">
+                <label>Freelancers Needed</label>
+                <input type="number" name="freelancers_needed" class="form-control" value="{{ project.freelancers_needed or 1 }}">
+            </div>
+        </div>
+        <button class="btn btn-primary btn-block">Save Changes</button>
+        <a href="{{ url_for('admin.projects') }}" class="btn btn-outline-gold btn-block">Cancel</a>
+    </form>
+</div>
+{% endblock %}

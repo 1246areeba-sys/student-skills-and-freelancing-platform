@@ -1,0 +1,111 @@
+/* ============================================================
+   Auth pages (login, register, forgot password)
+   ============================================================ */
+.auth-page {
+    min-height: calc(100vh - 68px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, var(--royal) 0%, var(--royal-dark) 100%);
+}
+
+.auth-card {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 460px;
+    padding: 38px;
+}
+
+.auth-card.wide {
+    max-width: 620px;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 26px;
+}
+
+.auth-header .brand-logo {
+    font-size: 2.2rem;
+    color: var(--gold);
+}
+
+.auth-header h2 {
+    margin: 10px 0 4px;
+}
+
+.auth-header p {
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+.auth-footer a {
+    color: var(--royal);
+    font-weight: 600;
+}
+
+.auth-divider {
+    text-align: center;
+    margin: 18px 0;
+    color: var(--muted);
+    font-size: 0.85rem;
+    position: relative;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background: var(--line);
+}
+
+.auth-divider::before {
+    left: 0;
+}
+
+.auth-divider::after {
+    right: 0;
+}
+
+.role-toggle {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.role-toggle a {
+    flex: 1;
+    text-align: center;
+    padding: 12px;
+    border-radius: 10px;
+    border: 2px solid var(--line);
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.role-toggle a.active {
+    border-color: var(--royal);
+    background: var(--royal);
+    color: #fff;
+}
+
+.file-input {
+    padding: 8px;
+    border: 1px dashed var(--line);
+    border-radius: 10px;
+    width: 100%;
+    font-size: 0.85rem;
+}

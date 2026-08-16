@@ -1,0 +1,37 @@
+{% extends "dashboard_base.html" %}
+{% block title %}Hired Students — {{ platform_name }}{% endblock %}
+{% block page_title %}Hired Students{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('client.dashboard') }}" class="sidebar-link"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+<a href="{{ url_for('client.my_projects') }}" class="sidebar-link"><i class="fa-solid fa-briefcase"></i> My Projects</a>
+<a href="{{ url_for('client.hired_students') }}" class="sidebar-link active"><i class="fa-solid fa-user-graduate"></i> Hired Students</a>
+{% endblock %}
+{% block content %}
+<div class="panel">
+    <div class="panel-head"><h3>Hired Students ({{ hires|length }})</h3></div>
+    {% if hires %}
+    <div class="card-grid">
+        {% for h in hires %}
+        <div class="student-card">
+            <img src="{{ url_for('static', filename=h.student.user.display_picture) }}" alt="avatar" class="student-avatar" onerror="this.src='{{ url_for('static', filename='images/default-avatar.png') }}'">
+            <h4>{{ h.student.user.name }}</h4>
+            <p class="student-uni"><i class="fa-solid fa-building-columns"></i> {{ h.student.university or '' }}</p>
+            <p class="muted small">Project: <a href="{{ url_for('projects.workspace', project_id=h.project_id) }}">{{ h.project.title }}</a></p>
+            <span class="status-badge status-{{ h.status }}">{{ h.status }}</span>
+            <div class="student-actions">
+                <a href="{{ url_for('projects.workspace', project_id=h.project_id) }}" class="btn btn-primary btn-sm">Workspace</a>
+                <a href="{{ url_for('message.chat', user_id=h.student.user_id) }}" class="btn btn-gold btn-sm">Message</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fa-solid fa-user-graduate"></i>
+        <h4>No hired students yet</h4>
+        <p>Accept proposals to hire students and start projects.</p>
+        <a href="{{ url_for('client.my_projects') }}" class="btn btn-gold">View My Projects</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

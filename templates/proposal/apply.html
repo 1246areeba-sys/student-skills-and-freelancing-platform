@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Apply — {{ project.title }} — {{ platform_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/student.css') }}">
+{% endblock %}
+{% block content %}
+<div class="container narrow">
+    <a href="{{ url_for('projects.detail', project_id=project.id) }}" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Project</a>
+    <div class="panel">
+        <h2>Apply to "{{ project.title }}"</h2>
+        <p class="muted">Client: {{ project.client.company_name or project.client.user.name }} &middot; Budget: {{ project.budget|money }}</p>
+
+        <form method="post" action="{{ url_for('proposal.apply', project_id=project.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+            <div class="form-group">
+                <label>Cover Letter *</label>
+                <textarea name="cover_letter" class="form-control" rows="6" required placeholder="Explain why you're a great fit for this project..."></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Proposed Price ($)</label>
+                    <input type="number" step="0.01" name="proposed_price" class="form-control" value="{{ project.budget }}" placeholder="e.g. 250">
+                </div>
+                <div class="form-group">
+                    <label>Delivery Time (days)</label>
+                    <input type="number" name="delivery_time" class="form-control" value="7" min="1">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Relevant Skills</label>
+                <input type="text" name="relevant_skills" class="form-control" placeholder="e.g. Python, Flask, React">
+            </div>
+            <div class="form-group">
+                <label>Portfolio Samples (links, comma separated)</label>
+                <input type="text" name="portfolio_samples" class="form-control" placeholder="https://..., https://...">
+            </div>
+            <button type="submit" class="btn btn-gold btn-block"><i class="fa-solid fa-paper-plane"></i> Submit Proposal</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

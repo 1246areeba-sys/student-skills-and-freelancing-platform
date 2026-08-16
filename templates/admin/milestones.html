@@ -1,0 +1,29 @@
+{% extends "admin/base.html" %}
+{% set title = 'Milestones' %}
+{% block admin_content %}
+<div class="panel">
+    <table class="admin-table">
+        <thead><tr><th>Project</th><th>Title</th><th>Amount</th><th>Status</th><th>Payment</th><th>Deadline</th><th>Actions</th></tr></thead>
+        <tbody>
+        {% for m in milestones %}
+        <tr>
+            <td class="muted small"><a href="{{ url_for('projects.detail', project_id=m.project_id) }}">{{ m.project.title if m.project else '—' }}</a></td>
+            <td>{{ m.title }}</td>
+            <td>{{ m.amount|money }}</td>
+            <td><span class="badge-status badge-{{ m.status }}">{{ m.status }}</span></td>
+            <td><span class="badge-status badge-{{ m.payment_status }}">{{ m.payment_status }}</span></td>
+            <td class="muted small">{{ m.deadline|date if m.deadline else '—' }}</td>
+            <td class="admin-actions">
+                <a href="{{ url_for('admin.edit_milestone', milestone_id=m.id) }}" class="btn btn-outline-gold btn-sm">Edit</a>
+                <form method="post" action="{{ url_for('admin.delete_milestone', milestone_id=m.id) }}" class="inline-form" onsubmit="return confirm('Delete this milestone?')">
+                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                    <button class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if not milestones %}<p class="muted empty-inline">No milestones yet.</p>{% endif %}
+</div>
+{% endblock %}

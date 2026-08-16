@@ -1,0 +1,164 @@
+/* ============================================================
+   Client-specific styles
+   ============================================================ */
+.client-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 18px;
+    margin-bottom: 26px;
+}
+
+.client-stat {
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    padding: 22px;
+    text-align: center;
+}
+
+.client-stat .stat-num {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--royal);
+}
+
+.client-stat .stat-label {
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+.project-manage-card {
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    padding: 20px;
+    margin-bottom: 18px;
+    border-left: 4px solid var(--royal);
+}
+
+.project-manage-card.status-open {
+    border-left-color: var(--success);
+}
+
+.project-manage-card.status-in_progress {
+    border-left-color: var(--gold);
+}
+
+.project-manage-card.status-completed {
+    border-left-color: var(--royal-light);
+}
+
+.project-manage-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.project-manage-meta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin: 12px 0;
+    font-size: 0.88rem;
+    color: var(--muted);
+}
+
+.project-manage-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.proposal-manage {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+}
+
+.proposal-manage-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.proposal-manage-body {
+    margin: 10px 0;
+}
+
+.proposal-manage-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.hired-card {
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    padding: 18px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.hired-card .hired-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.hired-card .hired-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.payment-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.payment-row:last-child {
+    border-bottom: none;
+}
+
+.payment-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.payment-summary .summary-box {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 18px;
+    text-align: center;
+}
+
+.payment-summary .summary-box .num {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--royal);
+}
+
+.payment-summary .summary-box.gold .num {
+    color: var(--gold);
+}
+
+.post-project-form {
+    max-width: 800px;
+}
+
+.post-project-form .form-row {
+    margin-bottom: 0;
+}

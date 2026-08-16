@@ -1,0 +1,33 @@
+{% extends "admin/base.html" %}
+{% set title = 'Assessments' %}
+{% block admin_content %}
+<div class="panel">
+    <div class="panel-head">
+        <h3>Skill Assessments ({{ assessments|length }})</h3>
+        <a href="{{ url_for('assessment.create') }}" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> New Assessment</a>
+    </div>
+    <table class="admin-table">
+        <thead><tr><th>Title</th><th>Skill</th><th>Questions</th><th>Passing</th><th>Duration</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>
+        {% for a in assessments %}
+        <tr>
+            <td>{{ a.title }}</td>
+            <td class="muted small">{{ a.skill.name if a.skill else '—' }}</td>
+            <td>{{ a.questions.count() }}</td>
+            <td>{{ a.passing_score }}%</td>
+            <td>{{ a.duration_minutes }} min</td>
+            <td><span class="badge-status badge-{{ 'active' if a.is_active else 'inactive' }}">{% if a.is_active %}Active{% else %}Inactive{% endif %}</span></td>
+            <td class="admin-actions">
+                <a href="{{ url_for('assessment.edit', assessment_id=a.id) }}" class="btn btn-outline-gold btn-sm">Edit</a>
+                <form method="post" action="{{ url_for('assessment.delete', assessment_id=a.id) }}" class="inline-form" onsubmit="return confirm('Delete this assessment?')">
+                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                    <button class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if not assessments %}<p class="muted empty-inline">No assessments yet. Create one to test student skills.</p>{% endif %}
+</div>
+{% endblock %}

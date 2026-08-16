@@ -1,0 +1,57 @@
+{% extends "admin/base.html" %}
+{% set title = 'Projects' %}
+{% block admin_content %}
+<div class="panel">
+    <div class="panel-head" style="display:flex;justify-content:space-between;align-items:center;">
+        <h3>Projects</h3>
+        <a href="{{ url_for('admin.create_project') }}" class="btn btn-primary btn-sm">
+            <i class="fa-solid fa-plus"></i> Create Project
+        </a>
+    </div>
+    <form method="get" action="{{ url_for('admin.projects') }}" class="admin-filter-bar">
+        <select name="status" class="form-control">
+            <option value="">All Statuses</option>
+            <option value="open" {% if status == 'open' %}selected{% endif %}>Open</option>
+            <option value="in_progress" {% if status == 'in_progress' %}selected{% endif %}>In Progress</option>
+            <option value="completed" {% if status == 'completed' %}selected{% endif %}>Completed</option>
+            <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+        </select>
+        <button class="btn btn-primary btn-sm">Filter</button>
+        <a href="{{ url_for('admin.projects') }}" class="btn btn-outline-gold btn-sm">Reset</a>
+    </form>
+
+    <table class="admin-table">
+        <thead><tr><th>Title</th><th>Client</th><th>Budget</th><th>Status</th><th>Proposals</th><th>Actions</th></tr></thead>
+        <tbody>
+        {% for p in projects %}
+        <tr>
+            <td><a href="{{ url_for('projects.detail', project_id=p.id) }}">{{ p.title }}</a></td>
+            <td class="muted small">{{ p.client.company_name or p.client.user.name }}</td>
+            <td>{{ p.budget|money }}</td>
+            <td>
+                <form method="post" action="{{ url_for('admin.project_status', project_id=p.id) }}" class="inline-form">
+                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                    <select name="status" onchange="this.form.submit()" class="form-control-sm">
+                        <option value="open" {% if p.status == 'open' %}selected{% endif %}>Open</option>
+                        <option value="in_progress" {% if p.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                        <option value="completed" {% if p.status == 'completed' %}selected{% endif %}>Completed</option>
+                        <option value="cancelled" {% if p.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                    </select>
+                </form>
+            </td>
+            <td>{{ p.proposal_count }}</td>
+            <td class="admin-actions">
+                <a href="{{ url_for('admin.view_project', project_id=p.id) }}" class="btn btn-outline-gold btn-sm">View</a>
+                <a href="{{ url_for('admin.edit_project', project_id=p.id) }}" class="btn btn-outline-primary btn-sm">Edit</a>
+                <form method="post" action="{{ url_for('admin.delete_project', project_id=p.id) }}" class="inline-form" onsubmit="return confirm('Delete this project?')">
+                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                    <button class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if not projects %}<p class="muted empty-inline">No projects found.</p>{% endif %}
+</div>
+{% endblock %}

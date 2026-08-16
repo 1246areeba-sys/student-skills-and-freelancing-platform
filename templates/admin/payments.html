@@ -1,0 +1,50 @@
+{% extends "admin/base.html" %}
+{% set title = 'Payments' %}
+{% block admin_content %}
+<div class="stat-grid stat-grid-3">
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-dollar-sign"></i></div>
+        <div><div class="stat-num">{{ total|money }}</div><div class="stat-label">Total Paid</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-coins"></i></div>
+        <div><div class="stat-num">{{ fees|money }}</div><div class="stat-label">Platform Fees</div></div>
+    </div>
+</div>
+
+<div class="panel">
+    <table class="admin-table">
+        <thead><tr><th>Project</th><th>Client</th><th>Student</th><th>Amount</th><th>Fee</th><th>Student Gets</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+        <tbody>
+        {% for p in payments %}
+        <tr>
+            <td><a href="{{ url_for('projects.detail', project_id=p.project_id) }}">{{ p.project.title }}</a></td>
+            <td class="muted small">{{ p.client.user.name }}</td>
+            <td class="muted small">{{ p.student.user.name }}</td>
+            <td>{{ p.amount|money }}</td>
+            <td>{{ p.platform_fee|money }}</td>
+            <td class="text-gold">{{ p.student_amount|money }}</td>
+            <td>
+                <form method="post" action="{{ url_for('admin.payment_status', payment_id=p.id) }}" class="inline-form">
+                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                    <select name="status" onchange="this.form.submit()" class="form-control-sm">
+                        {% for opt in ['pending', 'processing', 'paid', 'failed', 'refunded'] %}
+                        <option value="{{ opt }}" {% if p.status == opt %}selected{% endif %}>{{ opt }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </td>
+            <td class="muted small">{{ p.created_at|date }}</td>
+            <td class="admin-actions">
+                <form method="post" action="{{ url_for('admin.delete_payment', payment_id=p.id) }}" class="inline-form" onsubmit="return confirm('Delete this payment record?')">
+                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                    <button class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if not payments %}<p class="muted empty-inline">No payments yet.</p>{% endif %}
+</div>
+{% endblock %}

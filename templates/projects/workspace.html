@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% block title %}Workspace — {{ project.title }} — {{ platform_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/student.css') }}">
+{% endblock %}
+{% block content %}
+<div class="container workspace">
+    <a href="{{ url_for('projects.detail', project_id=project.id) }}" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Project</a>
+
+    <div class="workspace-head">
+        <div>
+            <h1>{{ project.title }}</h1>
+            <p class="muted">Workspace between {{ project.client.user.name }} and {{ hire.student.user.name }}</p>
+        </div>
+        <div class="workspace-progress">
+            <div class="progress-bar"><div class="progress-fill" style="width:{{ progress }}%"></div></div>
+            <span class="muted small">{{ progress }}% complete</span>
+        </div>
+    </div>
+
+    <div class="workspace-layout">
+        <!-- Left: milestones + messages -->
+        <div class="workspace-main">
+            <div class="panel">
+                <div class="panel-head">
+                    <h3>Milestones</h3>
+                    {% if is_client %}
+                    <button class="btn btn-outline-gold btn-sm" onclick="document.getElementById('milestoneForm').style.display='block'"><i class="fa-solid fa-plus"></i> Add</button>
+                    {% endif %}
+                </div>
+
+                {% if is_client %}
+                <form method="post" action="{{ url_for('projects.add_milestone', project_id=project.id) }}" id="milestoneForm" style="display:none" class="inline-form">
+                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                    <input type="text" name="title" class="form-control" placeholder="Milestone title" required>
+                    <textarea name="description" class="form-control" placeholder="Description"></textarea>
+                    <input type="number" step="0.01" name="amount" class="form-control" placeholder="Amount ($)">
+                    <input type="date" name="deadline" class="form-control">
+                    <button class="btn btn-primary btn-sm">Save Milestone</button>
+                </form>
+                {% endif %}
+
+                {% if milestones %}
+                <div class="milestone-list">
+                    {% for m in milestones %}
+                    <div class="milestone-item status-{{ m.status }}">
+                        <div class="milestone-info">
+                            <strong>{{ m.title }}</strong>
+                            <span class="badge-status badge-{{ m.status }}">{{ m.status }}</span>
+                            {% if m.amount %}<span class="text-gold">{{ m.amount|money }}</span>{% endif %}
+                            {% if m.deadline %}<span class="muted small">{{ m.deadline|date }}</span>{% endif %}
+                            <p class="small muted">{{ m.description or '' }}</p>
+                            {% if m.deliverable %}<a href="{{ url_for('static', filename=m.deliverable) }}" target="_blank" class="btn btn-outline-gold btn-sm"><i class="fa-solid fa-paperclip"></i> Deliverable</a>{% endif %}
+                        </div>
+                        <div class="milestone-actions">
+                            {% if is_student and m.status in ('pending','in_progress') %}
+                            <form method="post" action="{{ url_for('projects.submit_work', project_id=project.id) }}" enctype="multipart/form-data" class="inline-form">
+                                <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                                <input type="hidden" name="milestone_id" value="{{ m.id }}">
+                                <input type="file" name="deliverable" required>
+                                <button class="btn btn-primary btn-sm">Submit</button>
+                            </form>
+                            {% endif %}
+                            {% if is_client and m.status == 'submitted' %}
+                            <form method="post" action="{{ url_for('projects.approve_work', project_id=project.id) }}" class="inline-form">
+                                <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                                <input type="hidden" name="milestone_id" value="{{ m.id }}">
+                                <button class="btn btn-primary btn-sm">Approve</button>
+                            </form>
+                            <form method="post" action="{{ url_for('projects.request_revision', project_id=project.id) }}" class="inline-form">
+                                <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                                <input type="hidden" name="milestone_id" value="{{ m.id }}">
+                                <button class="btn btn-outline-danger btn-sm">Revision</button>
+                            </form>
+                            {% endif %}
+                            {% if is_client and m.status in ('pending','in_progress') %}
+                            <form method="post" action="{{ url_for('projects.update_milestone_status', project_id=project.id, milestone_id=m.id) }}" class="inline-form">
+                                <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                                <input type="hidden" name="status" value="in_progress">
+                                <button class="btn btn-outline-gold btn-sm">Start</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="muted">No milestones yet. {% if is_client %}Add one to start tracking.{% endif %}</p>
+                {% endif %}
+            </div>
+
+            <div class="panel">
+                <div class="panel-head"><h3>Messages</h3></div>
+                <div class="chat-thread" id="chatThread">
+                    {% for msg in messages %}
+                    <div class="chat-msg {% if msg.sender_id == current_user.id %}own{% endif %}">
+                        <p>{{ msg.message }}</p>
+                        {% if msg.attachment %}<a href="{{ url_for('static', filename=msg.attachment) }}" target="_blank" class="small"><i class="fa-solid fa-paperclip"></i> Attachment</a>{% endif %}
+                        <span class="chat-time">{{ msg.created_at|timeago }}</span>
+                    </div>
+                    {% else %}
+                    <p class="muted">No messages yet. Start the conversation below.</p>
+                    {% endfor %}
+                </div>
+                <form method="post" action="{{ url_for('projects.workspace_message', project_id=project.id) }}" enctype="multipart/form-data" class="chat-form">
+                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                    <input type="text" name="message" class="form-control" placeholder="Type a message...">
+                    <input type="file" name="attachment" class="chat-file">
+                    <button class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i></button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right: payment + actions -->
+        <aside class="workspace-side">
+            <div class="panel">
+                <h4>Payment</h4>
+                {% if payment %}
+                <div class="stat-row"><span>Total</span><strong>{{ payment.amount|money }}</strong></div>
+                <div class="stat-row"><span>Platform Fee</span><strong>{{ payment.platform_fee|money }}</strong></div>
+                <div class="stat-row"><span>Student Gets</span><strong class="text-gold">{{ payment.student_amount|money }}</strong></div>
+                <div class="stat-row"><span>Status</span><strong>{{ payment.status }}</strong></div>
+                {% if is_client and payment.status == 'pending' %}
+                <form method="post" action="{{ url_for('client.mark_paid', payment_id=payment.id) }}" class="inline-form">
+                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                    <button class="btn btn-gold btn-block">Mark as Paid</button>
+                </form>
+                {% endif %}
+                {% else %}
+                <p class="muted">No payment record yet.</p>
+                {% if is_client %}
+                <p class="small muted">Payment is created when the project is completed.</p>
+                {% endif %}
+                {% endif %}
+            </div>
+
+            <div class="panel">
+                <h4>Actions</h4>
+                {% if project.status == 'in_progress' %}
+                    {% if is_client %}
+                    <form method="post" action="{{ url_for('client.complete_project', project_id=project.id) }}" class="inline-form">
+                        <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                        <button class="btn btn-primary btn-block">Mark Completed</button>
+                    </form>
+                    {% endif %}
+                {% endif %}
+                <a href="{{ url_for('message.chat', user_id=(hire.student.user.id if is_client else project.client.user.id)) }}" class="btn btn-outline-gold btn-block"><i class="fa-solid fa-comment"></i> Open Chat</a>
+                {% if project.status == 'completed' %}
+                <a href="{{ url_for('review.leave_review', project_id=project.id) }}" class="btn btn-gold btn-block"><i class="fa-solid fa-star"></i> Leave Review</a>
+                {% endif %}
+            </div>
+        </aside>
+    </div>
+</div>
+{% endblock %}

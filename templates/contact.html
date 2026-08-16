@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Contact Us — {{ platform_name }}{% endblock %}
+{% block content %}
+<section class="page-hero">
+    <div class="container text-center">
+        <h1>Contact Us</h1>
+        <p>We'd love to hear from you. Send us a message and we'll respond soon.</p>
+    </div>
+</section>
+<section class="section">
+    <div class="container narrow">
+        <div class="contact-grid">
+            <div class="contact-info">
+                <h3>Get in Touch</h3>
+                <p><i class="fa-solid fa-envelope text-gold"></i> support@skillbridge.test</p>
+                <p><i class="fa-solid fa-phone text-gold"></i> +1 (555) 000-0000</p>
+                <p><i class="fa-solid fa-location-dot text-gold"></i> 123 University Ave, Innovation City</p>
+            </div>
+            <form method="post" class="form-card">
+                <div class="form-group">
+                    <label>Name *</label>
+                    <input type="text" name="name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" name="email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Message *</label>
+                    <textarea name="message" class="form-control" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-gold btn-block">Send Message</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

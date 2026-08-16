@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Access Denied — {{ platform_name }}{% endblock %}
+{% block content %}
+<section class="error-section">
+    <div class="container text-center">
+        <div class="error-code">403</div>
+        <h1>Access Denied</h1>
+        <p class="error-text">You don't have permission to access this page. Please log in with the appropriate account.</p>
+        <div class="error-actions">
+            <a href="{{ url_for('home.index') }}" class="btn btn-primary">Back to Home</a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-gold">Login</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

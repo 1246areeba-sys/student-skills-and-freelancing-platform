@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}{{ title|default('Admin') }} — {{ platform_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+{% block content %}
+<div class="admin-layout">
+    <aside class="admin-sidebar">
+        <div class="admin-brand">
+            <a href="{{ url_for('admin.dashboard') }}" class="brand brand-light">
+                <span class="brand-logo"><img src="{{ url_for('static', filename='logo.webp') }}" alt="SkillBridge logo"></span>
+                <span class="brand-name">Admin</span>
+            </a>
+        </div>
+        <nav class="admin-nav">
+            <a href="{{ url_for('admin.dashboard') }}" class="admin-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+            <a href="{{ url_for('admin.users') }}" class="admin-link {% if 'users' in request.endpoint %}active{% endif %}"><i class="fa-solid fa-users"></i> Users</a>
+            <a href="{{ url_for('admin.students') }}" class="admin-link {% if request.endpoint == 'admin.students' %}active{% endif %}"><i class="fa-solid fa-user-graduate"></i> Students</a>
+            <a href="{{ url_for('admin.clients') }}" class="admin-link {% if request.endpoint == 'admin.clients' %}active{% endif %}"><i class="fa-solid fa-building"></i> Clients</a>
+            <a href="{{ url_for('admin.projects') }}" class="admin-link {% if request.endpoint == 'admin.projects' %}active{% endif %}"><i class="fa-solid fa-briefcase"></i> Projects</a>
+            <a href="{{ url_for('admin.proposals') }}" class="admin-link {% if request.endpoint == 'admin.proposals' %}active{% endif %}"><i class="fa-solid fa-paper-plane"></i> Proposals</a>
+            <a href="{{ url_for('admin.hired') }}" class="admin-link {% if request.endpoint == 'admin.hired' %}active{% endif %}"><i class="fa-solid fa-handshake"></i> Hires</a>
+            <a href="{{ url_for('admin.skills') }}" class="admin-link {% if request.endpoint == 'admin.skills' %}active{% endif %}"><i class="fa-solid fa-lightbulb"></i> Skills</a>
+            <a href="{{ url_for('admin.categories') }}" class="admin-link {% if request.endpoint == 'admin.categories' %}active{% endif %}"><i class="fa-solid fa-tags"></i> Categories</a>
+            <a href="{{ url_for('admin.certificates') }}" class="admin-link {% if request.endpoint == 'admin.certificates' %}active{% endif %}"><i class="fa-solid fa-certificate"></i> Certificates</a>
+            <a href="{{ url_for('assessment.admin_list') }}" class="admin-link {% if 'assessment' in request.endpoint %}active{% endif %}"><i class="fa-solid fa-clipboard-check"></i> Assessments</a>
+            <a href="{{ url_for('admin.reviews') }}" class="admin-link {% if request.endpoint == 'admin.reviews' %}active{% endif %}"><i class="fa-solid fa-star"></i> Reviews</a>
+            <a href="{{ url_for('admin.payments') }}" class="admin-link {% if request.endpoint == 'admin.payments' %}active{% endif %}"><i class="fa-solid fa-dollar-sign"></i> Payments</a>
+            <a href="{{ url_for('admin.withdrawals') }}" class="admin-link {% if request.endpoint == 'admin.withdrawals' %}active{% endif %}"><i class="fa-solid fa-money-bill-transfer"></i> Withdrawals</a>
+            <a href="{{ url_for('admin.notifications') }}" class="admin-link {% if request.endpoint == 'admin.notifications' %}active{% endif %}"><i class="fa-solid fa-bullhorn"></i> Notify</a>
+            <a href="{{ url_for('admin.banners') }}" class="admin-link {% if request.endpoint == 'admin.banners' %}active{% endif %}"><i class="fa-solid fa-rectangle-ad"></i> Banners</a>
+            <a href="{{ url_for('admin.messages') }}" class="admin-link {% if request.endpoint == 'admin.messages' %}active{% endif %}"><i class="fa-solid fa-comments"></i> Messages</a>
+            <a href="{{ url_for('admin.milestones') }}" class="admin-link {% if request.endpoint == 'admin.milestones' %}active{% endif %}"><i class="fa-solid fa-flag-checkered"></i> Milestones</a>
+            <a href="{{ url_for('admin.reports') }}" class="admin-link {% if request.endpoint == 'admin.reports' %}active{% endif %}"><i class="fa-solid fa-chart-line"></i> Reports</a>
+        </nav>
+        <div class="admin-sidebar-foot">
+            <a href="{{ url_for('home.index') }}" class="btn btn-outline-gold btn-sm btn-block"><i class="fa-solid fa-arrow-left"></i> View Site</a>
+        </div>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-topbar">
+            <h1 class="admin-page-title">{{ title|default('Admin Panel') }}</h1>
+            <div class="admin-user">
+                <span class="muted small">{{ current_user.name }}</span>
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-right-from-bracket"></i></a>
+            </div>
+        </header>
+        <div class="admin-content">
+            {% block admin_content %}{% endblock %}
+        </div>
+    </main>
+</div>
+{% endblock %}

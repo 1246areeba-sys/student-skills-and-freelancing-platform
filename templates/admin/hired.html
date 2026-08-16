@@ -1,0 +1,36 @@
+{% extends "admin/base.html" %}
+{% set title = 'Hires' %}
+{% block admin_content %}
+<div class="panel">
+    <table class="admin-table">
+        <thead><tr><th>Project</th><th>Student</th><th>Client</th><th>Status</th><th>Hired</th><th>Actions</th></tr></thead>
+        <tbody>
+        {% for h in hires %}
+        <tr>
+            <td><a href="{{ url_for('projects.detail', project_id=h.project_id) }}">{{ h.project.title }}</a></td>
+            <td>{{ h.student.user.name }}</td>
+            <td>{{ h.client.user.name }}</td>
+            <td>
+                <form method="post" action="{{ url_for('admin.hire_status', hire_id=h.id) }}" class="inline-form">
+                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                    <select name="status" onchange="this.form.submit()" class="form-control-sm">
+                        {% for opt in ['active', 'completed', 'cancelled'] %}
+                        <option value="{{ opt }}" {% if h.status == opt %}selected{% endif %}>{{ opt }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </td>
+            <td class="muted small">{{ h.hired_at|date }}</td>
+            <td class="admin-actions">
+                <form method="post" action="{{ url_for('admin.delete_hire', hire_id=h.id) }}" class="inline-form" onsubmit="return confirm('Delete this hire record?')">
+                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                    <button class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if not hires %}<p class="muted empty-inline">No hires yet.</p>{% endif %}
+</div>
+{% endblock %}

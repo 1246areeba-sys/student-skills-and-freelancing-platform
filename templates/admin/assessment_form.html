@@ -1,0 +1,105 @@
+{% extends "admin/base.html" %}
+{% set title = 'Assessment' %}
+{% block admin_content %}
+<div class="admin-two-col">
+    <div class="panel">
+        <div class="panel-head"><h3>{% if assessment %}Edit{% else %}New{% endif %} Assessment</h3></div>
+        <form method="post" action="{{ url_for('assessment.edit', assessment_id=assessment.id) if assessment else url_for('assessment.create') }}">
+            <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" name="title" class="form-control" value="{{ assessment.title if assessment else '' }}" required>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" class="form-control" rows="3">{{ assessment.description if assessment else '' }}</textarea>
+            </div>
+            <div class="form-group">
+                <label>Skill</label>
+                <select name="skill_id" class="form-control">
+                    <option value="">Select skill...</option>
+                    {% for s in skills %}
+                    <option value="{{ s.id }}" {% if assessment and assessment.skill_id == s.id %}selected{% endif %}>{{ s.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Passing Score (%)</label>
+                    <input type="number" name="passing_score" class="form-control" value="{{ assessment.passing_score if assessment else 70 }}" min="1" max="100">
+                </div>
+                <div class="form-group">
+                    <label>Duration (min)</label>
+                    <input type="number" name="duration_minutes" class="form-control" value="{{ assessment.duration_minutes if assessment else 15 }}" min="1">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" name="is_active" {% if not assessment or assessment.is_active %}checked{% endif %}> Active
+                </label>
+            </div>
+            <button class="btn btn-primary btn-block">Save Assessment</button>
+        </form>
+    </div>
+
+    {% if assessment %}
+    <div class="panel">
+        <div class="panel-head"><h3>Questions ({{ assessment.questions.count() }})</h3></div>
+        <div class="question-list">
+            {% for q in assessment.questions.all() %}
+            <div class="question-item">
+                <p><strong>Q{{ loop.index }}.</strong> {{ q.question }}</p>
+                <ul class="option-list">
+                    <li class="{% if q.correct_answer == 'A' %}correct{% endif %}">A. {{ q.option_a }}</li>
+                    <li class="{% if q.correct_answer == 'B' %}correct{% endif %}">B. {{ q.option_b }}</li>
+                    {% if q.option_c %}<li class="{% if q.correct_answer == 'C' %}correct{% endif %}">C. {{ q.option_c }}</li>{% endif %}
+                    {% if q.option_d %}<li class="{% if q.correct_answer == 'D' %}correct{% endif %}">D. {{ q.option_d }}</li>{% endif %}
+                </ul>
+            </div>
+            {% endfor %}
+        </div>
+        {% if not assessment.questions.count() %}<p class="muted empty-inline">No questions yet.</p>{% endif %}
+
+        <hr>
+        <h4>Add Question</h4>
+        <form method="post" action="{{ url_for('assessment.add_question', assessment_id=assessment.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+            <div class="form-group">
+                <label>Question</label>
+                <input type="text" name="question" class="form-control" required>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Option A</label>
+                    <input type="text" name="option_a" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Option B</label>
+                    <input type="text" name="option_b" class="form-control" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Option C</label>
+                    <input type="text" name="option_c" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Option D</label>
+                    <input type="text" name="option_d" class="form-control">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Correct Answer</label>
+                <select name="correct_answer" class="form-control">
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                </select>
+            </div>
+            <button class="btn btn-gold btn-block">Add Question</button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Messages — {{ platform_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/student.css') }}">
+{% endblock %}
+{% block content %}
+<div class="container">
+    <h1 class="page-title">Messages</h1>
+    <div class="panel">
+        {% if conversations %}
+        <div class="conversation-list">
+            {% for key, conv in conversations.items() %}
+            <a href="{{ url_for('message.chat', user_id=conv.other.id) }}" class="conversation-item {% if conv.unread > 0 %}unread{% endif %}">
+                <img src="{{ url_for('static', filename=conv.other.display_picture) }}" class="avatar-md" onerror="this.src='{{ url_for('static', filename='images/default-avatar.png') }}'">
+                <div class="conversation-body">
+                    <div class="conversation-top">
+                        <strong>{{ conv.other.name }}</strong>
+                        {% if conv.unread > 0 %}<span class="badge">{{ conv.unread }}</span>{% endif %}
+                    </div>
+                    <p class="muted small">{{ conv.last.message[:80] }}{% if conv.last.message|length > 80 %}...{% endif %}</p>
+                    <span class="muted small">{{ conv.last.created_at|timeago }}</span>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fa-solid fa-comments"></i>
+            <h4>No conversations yet</h4>
+            <p>Start a conversation from a project or student profile.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

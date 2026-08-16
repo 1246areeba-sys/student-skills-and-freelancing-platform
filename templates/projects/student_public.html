@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}{{ student.user.name }} — {{ platform_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/student.css') }}">
+{% endblock %}
+{% block content %}
+<div class="container profile-public">
+    <a href="{{ url_for('projects.students') }}" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Students</a>
+
+    <div class="detail-layout">
+        <div class="detail-main">
+            <div class="panel">
+                <div class="profile-header">
+                    <img src="{{ url_for('static', filename=student.user.display_picture) }}" class="avatar-xl" onerror="this.src='{{ url_for('static', filename='images/default-avatar.png') }}'">
+                    <div>
+                        <h1>{{ student.user.name }} {% if student.is_verified %}<i class="fa-solid fa-circle-check verified-badge"></i>{% endif %}</h1>
+                        <p class="muted">{{ student.university or 'Independent Student' }} &middot; {{ student.experience }}</p>
+                        <div class="rating-stars">{{ star_rating(avg_rating) }}</div>
+                        <p class="muted small">{{ avg_rating }} / 5 ({{ reviews|length }} reviews)</p>
+                    </div>
+                </div>
+
+                <h4 class="section-label">About</h4>
+                <p>{{ student.bio or 'No bio provided yet.' }}</p>
+
+                <h4 class="section-label">Skills</h4>
+                <div class="skill-tags">
+                    {% for sk in student.skill_names %}
+                    <span class="skill-tag">{{ sk }}</span>
+                    {% endfor %}
+                </div>
+
+                <h4 class="section-label">Education</h4>
+                <p>{{ student.education or 'Not specified' }}</p>
+
+                <h4 class="section-label">Languages</h4>
+                <p>{{ student.languages }}</p>
+
+                <h4 class="section-label">Portfolio</h4>
+                {% if student.portfolios.count() > 0 %}
+                <div class="card-grid">
+                    {% for pf in student.portfolios.all() %}
+                    <div class="portfolio-card">
+                        {% if pf.image %}<img src="{{ url_for('static', filename=pf.image) }}" alt="{{ pf.title }}">{% endif %}
+                        <h5>{{ pf.title }}</h5>
+                        <p class="muted small">{{ pf.description[:100] }}{% if pf.description|length > 100 %}...{% endif %}</p>
+                        <div class="skill-tags">
+                            {% for t in pf.tech_list[:4] %}<span class="skill-tag">{{ t }}</span>{% endfor %}
+                        </div>
+                        {% if pf.project_url %}<a href="{{ pf.project_url }}" target="_blank" class="btn btn-outline-gold btn-sm">Live</a>{% endif %}
+                        {% if pf.github_url %}<a href="{{ pf.github_url }}" target="_blank" class="btn btn-outline-gold btn-sm">Code</a>{% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="muted">No portfolio items yet.</p>
+                {% endif %}
+
+                <h4 class="section-label">Certificates</h4>
+                {% if student.certificates.count() > 0 %}
+                <ul class="cert-list">
+                    {% for c in student.certificates.all() %}
+                    <li><i class="fa-solid fa-certificate text-gold"></i> {{ c.title }} — {{ c.organization }} {% if c.verified %}<i class="fa-solid fa-circle-check verified-badge"></i>{% endif %}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="muted">No certificates listed.</p>
+                {% endif %}
+            </div>
+
+            <div class="panel">
+                <div class="panel-head"><h3>Reviews ({{ reviews|length }})</h3></div>
+                {% if reviews %}
+                {% for r in reviews %}
+                <div class="review-item">
+                    <div class="review-head">
+                        <strong>{{ r.reviewer.name }}</strong>
+                        <span class="rating-stars">{{ star_rating(r.rating) }}</span>
+                        <span class="muted small">{{ r.created_at|datetime }}</span>
+                    </div>
+                    <p>{{ r.review or 'No written review.' }}</p>
+                </div>
+                {% endfor %}
+                {% else %}
+                <p class="muted">No reviews yet.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <aside class="detail-side">
+            <div class="panel">
+                <div class="stat-row"><span>Hourly Rate</span><strong class="text-gold">${{ student.hourly_rate }}/hr</strong></div>
+                <div class="stat-row"><span>Availability</span><strong>{{ student.availability }}</strong></div>
+                <div class="stat-row"><span>Experience</span><strong>{{ student.experience }}</strong></div>
+                {% if student.user.city %}<div class="stat-row"><span>Location</span><strong>{{ student.user.city }}</strong></div>{% endif %}
+
+                {% if current_user.is_authenticated and current_user.is_client %}
+                <a href="{{ url_for('message.chat', user_id=student.user.id) }}" class="btn btn-primary btn-block"><i class="fa-solid fa-comment"></i> Message</a>
+                <form method="post" action="{{ url_for('projects.toggle_wishlist') }}" class="inline-form btn-block">
+                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                    <input type="hidden" name="item_type" value="student">
+                    <input type="hidden" name="item_id" value="{{ student.id }}">
+                    <button class="btn btn-outline-danger btn-block"><i class="fa-solid fa-heart"></i> Save</button>
+                </form>
+                {% elif not current_user.is_authenticated %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-block">Login to Contact</a>
+                {% endif %}
+            </div>
+        </aside>
+    </div>
+</div>
+{% endblock %}

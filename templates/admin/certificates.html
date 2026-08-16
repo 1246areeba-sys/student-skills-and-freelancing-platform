@@ -1,0 +1,35 @@
+{% extends "admin/base.html" %}
+{% set title = 'Certificates' %}
+{% block admin_content %}
+<div class="panel">
+    <table class="admin-table">
+        <thead><tr><th>Student</th><th>Title</th><th>Organization</th><th>Issued</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>
+        {% for c in certificates %}
+        <tr>
+            <td>{{ c.student.user.name }}</td>
+            <td>{{ c.title }}</td>
+            <td class="muted small">{{ c.organization }}</td>
+            <td class="muted small">{{ c.issue_date|date if c.issue_date else '—' }}</td>
+            <td>
+                {% if c.verified %}<span class="verified-badge"><i class="fa-solid fa-circle-check"></i> Verified</span>
+                {% else %}<span class="badge-status badge-pending">Pending</span>{% endif %}
+            </td>
+            <td class="admin-actions">
+                {% if c.certificate_file %}<a href="{{ url_for('static', filename=c.certificate_file) }}" target="_blank" class="btn btn-outline-gold btn-sm">File</a>{% endif %}
+                <form method="post" action="{{ url_for('admin.verify_certificate', cert_id=c.id) }}" class="inline-form">
+                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                    <button class="btn btn-primary btn-sm">{% if c.verified %}Unverify{% else %}Verify{% endif %}</button>
+                </form>
+                <form method="post" action="{{ url_for('admin.delete_certificate', cert_id=c.id) }}" class="inline-form" onsubmit="return confirm('Delete this certificate?')">
+                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                    <button class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if not certificates %}<p class="muted empty-inline">No certificates yet.</p>{% endif %}
+</div>
+{% endblock %}

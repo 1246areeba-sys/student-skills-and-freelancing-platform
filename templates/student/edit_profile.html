@@ -1,0 +1,91 @@
+{% extends "dashboard_base.html" %}
+{% block title %}Edit Profile — {{ platform_name }}{% endblock %}
+{% block page_title %}Edit Profile{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('student.dashboard') }}" class="sidebar-link"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+<a href="{{ url_for('student.profile') }}" class="sidebar-link"><i class="fa-solid fa-user"></i> My Profile</a>
+<a href="{{ url_for('student.skills') }}" class="sidebar-link"><i class="fa-solid fa-star"></i> My Skills</a>
+<a href="{{ url_for('student.portfolio') }}" class="sidebar-link"><i class="fa-solid fa-images"></i> Portfolio</a>
+<a href="{{ url_for('student.earnings') }}" class="sidebar-link"><i class="fa-solid fa-sack-dollar"></i> Earnings</a>
+<a href="{{ url_for('student.certificates') }}" class="sidebar-link"><i class="fa-solid fa-certificate"></i> Certificates</a>
+<a href="{{ url_for('student.resume_builder') }}" class="sidebar-link"><i class="fa-solid fa-file-lines"></i> Resume Builder</a>
+<a href="{{ url_for('student.wishlist') }}" class="sidebar-link"><i class="fa-solid fa-heart"></i> Wishlist</a>
+{% endblock %}
+{% block content %}
+<div class="panel">
+    <div class="panel-head"><h3>Edit Your Profile</h3></div>
+    <form method="post" enctype="multipart/form-data" class="form-card">
+        <div class="form-row">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" name="name" class="form-control" value="{{ current_user.name }}">
+            </div>
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="text" name="phone" class="form-control" value="{{ current_user.phone or '' }}">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>City</label>
+                <input type="text" name="city" class="form-control" value="{{ current_user.city or '' }}">
+            </div>
+            <div class="form-group">
+                <label>University / College</label>
+                <input type="text" name="university" class="form-control" value="{{ student.university or '' }}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Education</label>
+            <input type="text" name="education" class="form-control" value="{{ student.education or '' }}" placeholder="e.g. BSc Computer Science">
+        </div>
+        <div class="form-group">
+            <label>Bio / About Me</label>
+            <textarea name="bio" class="form-control" rows="4">{{ student.bio or '' }}</textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Experience Level</label>
+                <select name="experience" class="form-control">
+                    {% for lvl in ['Entry Level','Intermediate','Advanced','Expert'] %}
+                    <option value="{{ lvl }}" {{ 'selected' if student.experience == lvl }}>{{ lvl }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Availability</label>
+                <select name="availability" class="form-control">
+                    {% for a in ['Full Time','Part Time','Weekends','Freelance'] %}
+                    <option value="{{ a }}" {{ 'selected' if student.availability == a }}>{{ a }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Hourly Rate ($)</label>
+                <input type="number" step="0.01" name="hourly_rate" class="form-control" value="{{ student.hourly_rate or 0 }}">
+            </div>
+            <div class="form-group">
+                <label>Languages</label>
+                <input type="text" name="languages" class="form-control" value="{{ student.languages or 'English' }}">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Student ID</label>
+                <input type="text" name="student_id" class="form-control" value="{{ student.student_id or '' }}">
+            </div>
+            <div class="form-group">
+                <label>University Email</label>
+                <input type="email" name="university_email" class="form-control" value="{{ student.university_email or '' }}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Profile Picture</label>
+            <input type="file" name="profile_picture" class="form-control" accept="image/*">
+        </div>
+        <button type="submit" class="btn btn-gold btn-lg">Save Changes</button>
+    </form>
+</div>
+{% endblock %}

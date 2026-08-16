@@ -1,0 +1,49 @@
+{% extends "dashboard_base.html" %}
+{% block title %}Wishlist — {{ platform_name }}{% endblock %}
+{% block page_title %}Wishlist{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('student.dashboard') }}" class="sidebar-link"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+<a href="{{ url_for('student.profile') }}" class="sidebar-link"><i class="fa-solid fa-user"></i> My Profile</a>
+<a href="{{ url_for('student.wishlist') }}" class="sidebar-link active"><i class="fa-solid fa-heart"></i> Wishlist</a>
+{% endblock %}
+{% block content %}
+<div class="panel">
+    <div class="panel-head"><h3>Saved Items ({{ items|length }})</h3></div>
+    {% if items %}
+    <div class="card-grid">
+        {% for item in items %}
+        <div class="wishlist-card">
+            {% if item.item_type == 'project' %}
+                {% set project = item.project %}
+                <span class="badge-type">Project</span>
+                <h5>{{ project.title }}</h5>
+                <p class="muted small">{{ project.category.name if project.category else 'General' }}</p>
+                <p class="text-gold">${{ project.budget }}</p>
+                <div class="wishlist-actions">
+                    <a href="{{ url_for('projects.detail', project_id=project.id) }}" class="btn btn-primary btn-sm">View</a>
+                </div>
+            {% elif item.item_type == 'student' %}
+                {% set stu = item.student %}
+                <span class="badge-type">Student</span>
+                <h5>{{ stu.user.name }}</h5>
+                <p class="muted small">{{ stu.university or '' }}</p>
+                <div class="wishlist-actions">
+                    <a href="{{ url_for('projects.student_public', student_id=stu.id) }}" class="btn btn-primary btn-sm">View</a>
+                </div>
+            {% endif %}
+            <form method="post" action="{{ url_for('student.remove_wishlist', item_id=item.id) }}" class="inline-form" onsubmit="return confirm('Remove from wishlist?')">
+                <button class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-trash"></i> Remove</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fa-solid fa-heart"></i>
+        <h4>Your wishlist is empty</h4>
+        <p>Save students and projects to find them quickly later.</p>
+        <a href="{{ url_for('projects.projects') }}" class="btn btn-gold">Browse Projects</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

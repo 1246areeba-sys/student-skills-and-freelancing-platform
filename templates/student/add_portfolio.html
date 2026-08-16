@@ -1,0 +1,58 @@
+{% extends "dashboard_base.html" %}
+{% block title %}Add Portfolio — {{ platform_name }}{% endblock %}
+{% block page_title %}{% if editing %}Edit Portfolio{% else %}Add Portfolio{% endif %}{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('student.dashboard') }}" class="sidebar-link"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+<a href="{{ url_for('student.profile') }}" class="sidebar-link"><i class="fa-solid fa-user"></i> My Profile</a>
+<a href="{{ url_for('student.portfolio') }}" class="sidebar-link active"><i class="fa-solid fa-images"></i> Portfolio</a>
+<a href="{{ url_for('student.add_portfolio') }}" class="sidebar-link"><i class="fa-solid fa-plus"></i> Add Portfolio Item</a>
+{% endblock %}
+{% block content %}
+<div class="panel">
+    <div class="panel-head"><h3>{% if editing %}Edit Portfolio Item{% else %}Add Portfolio Item{% endif %}</h3></div>
+    <form method="post" enctype="multipart/form-data" class="form-card">
+        <div class="form-group">
+            <label>Project Title *</label>
+            <input type="text" name="title" class="form-control" value="{{ item.title if editing else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <textarea name="description" class="form-control" rows="4">{{ item.description if editing else '' }}</textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Technologies (comma separated)</label>
+                <input type="text" name="technologies" class="form-control" value="{{ item.technologies if editing else '' }}" placeholder="React, Node.js, PostgreSQL">
+            </div>
+            <div class="form-group">
+                <label>Category</label>
+                <select name="category_id" class="form-control">
+                    <option value="">-- None --</option>
+                    {% for c in categories %}<option value="{{ c.id }}" {{ 'selected' if editing and item.category_id == c.id }}>{{ c.name }}</option>{% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Project Link</label>
+                <input type="url" name="project_url" class="form-control" value="{{ item.project_url if editing else '' }}">
+            </div>
+            <div class="form-group">
+                <label>GitHub Link</label>
+                <input type="url" name="github_url" class="form-control" value="{{ item.github_url if editing else '' }}">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Completion Date</label>
+                <input type="date" name="completion_date" class="form-control" value="{{ item.completion_date|date if editing and item.completion_date else '' }}">
+            </div>
+            <div class="form-group">
+                <label>Project Image</label>
+                <input type="file" name="image" class="form-control" accept="image/*">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-gold btn-lg">{% if editing %}Update Item{% else %}Add Item{% endif %}</button>
+    </form>
+</div>
+{% endblock %}

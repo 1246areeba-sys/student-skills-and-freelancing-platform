@@ -1,0 +1,66 @@
+{% extends "admin/base.html" %}
+{% set title = 'Edit Banner' %}
+{% block admin_content %}
+<div class="panel">
+    <form method="post" action="{{ url_for('admin.edit_banner', banner_id=banner.id) }}" class="admin-form" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+        <div class="form-group">
+            <label>Title</label>
+            <input type="text" name="title" class="form-control" value="{{ banner.title }}" required>
+        </div>
+        <div class="form-group">
+            <label>Message</label>
+            <textarea name="message" class="form-control" rows="3" required>{{ banner.message }}</textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Link URL (optional)</label>
+                <input type="text" name="link_url" class="form-control" value="{{ banner.link_url or '' }}" placeholder="https://...">
+            </div>
+            <div class="form-group">
+                <label>Button Text</label>
+                <input type="text" name="link_text" class="form-control" value="{{ banner.link_text or 'Learn more' }}">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Background Style</label>
+                <select name="background" class="form-control">
+                    {% for opt in ['gold','blue','green','red','dark'] %}
+                    <option value="{{ opt }}" {{ 'selected' if banner.background == opt }}>{{ opt|capitalize }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Start Date (optional)</label>
+                <input type="date" name="start_date" class="form-control" value="{{ banner.start_date or '' }}">
+            </div>
+            <div class="form-group">
+                <label>End Date (optional)</label>
+                <input type="date" name="end_date" class="form-control" value="{{ banner.end_date or '' }}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Banner Image (optional)</label>
+            {% if banner.image %}
+                <div class="banner-preview">
+                    <img src="{{ url_for('static', filename=banner.image) }}" alt="banner preview">
+                </div>
+                <label class="checkbox-inline mt-2">
+                    <input type="checkbox" name="remove_image"> Remove current image
+                </label>
+            {% endif %}
+            <input type="file" name="image" class="form-control mt-2" accept="image/*">
+        </div>
+        <div class="form-group">
+            <label class="checkbox-inline">
+                <input type="checkbox" name="is_active" {{ 'checked' if banner.is_active }}> Active
+            </label>
+        </div>
+        <div class="form-actions">
+            <button class="btn btn-primary">Save Changes</button>
+            <a href="{{ url_for('admin.banners') }}" class="btn btn-outline-gold">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "admin/base.html" %}
+{% set title = 'Send Notification' %}
+{% block admin_content %}
+<div class="admin-two-col">
+    <div class="panel">
+        <div class="panel-head"><h3>Broadcast Notification</h3></div>
+        <form method="post" action="{{ url_for('admin.notifications') }}">
+            <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" name="title" class="form-control" required placeholder="e.g. Platform Maintenance">
+            </div>
+            <div class="form-group">
+                <label>Message</label>
+                <textarea name="message" class="form-control" rows="4" required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Target Audience</label>
+                <select name="target" class="form-control">
+                    <option value="all">All Users</option>
+                    <option value="students">Students</option>
+                    <option value="clients">Clients</option>
+                </select>
+            </div>
+            <button class="btn btn-gold btn-block"><i class="fa-solid fa-bullhorn"></i> Send Notification</button>
+        </form>
+    </div>
+
+    <div class="panel">
+        <div class="panel-head"><h3>Recent Notifications</h3></div>
+        <div class="notification-list">
+            {% for n in notifications %}
+            <div class="notification-item">
+                <div class="notification-body">
+                    <strong>{{ n.title }}</strong>
+                    <p class="muted small">{{ n.message }}</p>
+                    <span class="muted small">{{ n.created_at|timeago }}</span>
+                </div>
+                <form method="post" action="{{ url_for('admin.delete_notification', notification_id=n.id) }}" class="inline-form" onsubmit="return confirm('Delete this notification?')">
+                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                    <button class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+        {% if not notifications %}<p class="muted empty-inline">No notifications sent yet.</p>{% endif %}
+    </div>
+</div>
+{% endblock %}

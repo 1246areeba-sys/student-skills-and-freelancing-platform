@@ -1,0 +1,31 @@
+{% extends "admin/base.html" %}
+{% set title = 'Clients' %}
+{% block admin_content %}
+<div class="panel">
+    <table class="admin-table">
+        <thead><tr><th>Client</th><th>Company</th><th>Email</th><th>City</th><th>Projects</th><th>Actions</th></tr></thead>
+        <tbody>
+        {% for c in clients %}
+        <tr>
+            <td>
+                <img src="{{ url_for('static', filename=c.user.display_picture) }}" class="avatar-sm" onerror="this.src='{{ url_for('static', filename='images/default-avatar.png') }}'">
+                {{ c.user.name }}
+            </td>
+            <td>{{ c.company_name or '—' }}</td>
+            <td class="muted small">{{ c.user.email }}</td>
+            <td class="muted small">{{ c.user.city or '—' }}</td>
+            <td>{{ c.projects.count() }}</td>
+            <td class="admin-actions">
+                <a href="{{ url_for('admin.edit_client', client_id=c.id) }}" class="btn btn-outline-primary btn-sm">Edit</a>
+                <form method="post" action="{{ url_for('admin.delete_client', client_id=c.id) }}" class="inline-form" onsubmit="return confirm('Delete this client and their user account?')">
+                    <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                    <button class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if not clients %}<p class="muted empty-inline">No clients yet.</p>{% endif %}
+</div>
+{% endblock %}

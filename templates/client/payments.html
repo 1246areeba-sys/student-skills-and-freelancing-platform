@@ -1,0 +1,46 @@
+{% extends "dashboard_base.html" %}
+{% block title %}Payments — {{ platform_name }}{% endblock %}
+{% block page_title %}Payments{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('client.dashboard') }}" class="sidebar-link"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+<a href="{{ url_for('client.my_projects') }}" class="sidebar-link"><i class="fa-solid fa-briefcase"></i> My Projects</a>
+<a href="{{ url_for('client.hired_students') }}" class="sidebar-link"><i class="fa-solid fa-user-graduate"></i> Hired Students</a>
+<a href="{{ url_for('client.payments') }}" class="sidebar-link active"><i class="fa-solid fa-sack-dollar"></i> Payments</a>
+{% endblock %}
+{% block content %}
+<div class="stat-cards">
+    <div class="stat-card"><div class="stat-icon red"><i class="fa-solid fa-sack-dollar"></i></div><div><h3>${{ '%.2f'|format(total_spent) }}</h3><p>Total Paid</p></div></div>
+    <div class="stat-card"><div class="stat-icon gold"><i class="fa-solid fa-hourglass-half"></i></div><div><h3>${{ '%.2f'|format(pending) }}</h3><p>Pending</p></div></div>
+</div>
+<div class="panel">
+    <div class="panel-head"><h3>Payment Records</h3></div>
+    {% if payments %}
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead><tr><th>Project</th><th>Student</th><th>Amount</th><th>Fee</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+            <tbody>
+                {% for p in payments %}
+                <tr>
+                    <td><a href="{{ url_for('projects.detail', project_id=p.project_id) }}">{{ p.project.title }}</a></td>
+                    <td>{{ p.student.user.name }}</td>
+                    <td>${{ p.amount }}</td>
+                    <td>${{ p.platform_fee }}</td>
+                    <td><span class="status-badge status-{{ p.status }}">{{ p.status }}</span></td>
+                    <td>{{ p.created_at|date }}</td>
+                    <td>
+                        {% if p.status != 'paid' %}
+                        <form method="post" action="{{ url_for('client.mark_paid', payment_id=p.id) }}" class="inline-form" onsubmit="return confirm('Mark this payment as paid?')">
+                            <button class="btn btn-gold btn-sm">Mark Paid</button>
+                        </form>
+                        {% else %}—{% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-text">No payments yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

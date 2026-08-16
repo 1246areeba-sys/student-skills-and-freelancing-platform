@@ -1,0 +1,73 @@
+{% extends "dashboard_base.html" %}
+{% block title %}Earnings — {{ platform_name }}{% endblock %}
+{% block page_title %}Earnings{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('student.dashboard') }}" class="sidebar-link"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+<a href="{{ url_for('student.profile') }}" class="sidebar-link"><i class="fa-solid fa-user"></i> My Profile</a>
+<a href="{{ url_for('student.applications') }}" class="sidebar-link"><i class="fa-solid fa-paper-plane"></i> My Applications</a>
+<a href="{{ url_for('student.earnings') }}" class="sidebar-link active"><i class="fa-solid fa-sack-dollar"></i> Earnings</a>
+{% endblock %}
+{% block content %}
+<div class="stat-cards">
+    <div class="stat-card"><div class="stat-icon gold"><i class="fa-solid fa-sack-dollar"></i></div><div><h3>${{ '%.2f'|format(total_earned) }}</h3><p>Total Earnings</p></div></div>
+    <div class="stat-card"><div class="stat-icon blue"><i class="fa-solid fa-wallet"></i></div><div><h3>${{ '%.2f'|format(available) }}</h3><p>Available Balance</p></div></div>
+    <div class="stat-card"><div class="stat-icon purple"><i class="fa-solid fa-hourglass-half"></i></div><div><h3>${{ '%.2f'|format(pending) }}</h3><p>Pending Balance</p></div></div>
+    <div class="stat-card"><div class="stat-icon green"><i class="fa-solid fa-arrow-up-from-bracket"></i></div><div><h3>${{ '%.2f'|format(withdrawn) }}</h3><p>Withdrawn</p></div></div>
+    <div class="stat-card"><div class="stat-icon red"><i class="fa-solid fa-receipt"></i></div><div><h3>${{ '%.2f'|format(fees) }}</h3><p>Platform Fees</p></div></div>
+</div>
+
+<div class="panel">
+    <div class="panel-head"><h3>Request Withdrawal</h3></div>
+    <form method="post" action="{{ url_for('student.withdraw') }}" class="form-card row-inline">
+        <input type="number" step="0.01" name="amount" class="form-control" placeholder="Amount" required>
+        <select name="method" class="form-control">
+            <option>Bank Transfer</option>
+            <option>PayPal</option>
+            <option>Stripe</option>
+        </select>
+        <input type="text" name="account_details" class="form-control" placeholder="Account details">
+        <button type="submit" class="btn btn-gold">Withdraw</button>
+    </form>
+</div>
+
+<div class="panel">
+    <div class="panel-head"><h3>Payment History</h3></div>
+    {% if payments %}
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead><tr><th>Project</th><th>Amount</th><th>Fee</th><th>You Receive</th><th>Status</th><th>Date</th></tr></thead>
+            <tbody>
+                {% for p in payments %}
+                <tr>
+                    <td><a href="{{ url_for('projects.detail', project_id=p.project_id) }}">{{ p.project.title }}</a></td>
+                    <td>${{ p.amount }}</td>
+                    <td>${{ p.platform_fee }}</td>
+                    <td class="text-gold">${{ p.student_amount }}</td>
+                    <td><span class="status-badge status-{{ p.status }}">{{ p.status }}</span></td>
+                    <td>{{ p.created_at|date }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-text">No payments yet.</p>
+    {% endif %}
+</div>
+
+{% if withdrawals %}
+<div class="panel">
+    <div class="panel-head"><h3>Withdrawal Requests</h3></div>
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead><tr><th>Amount</th><th>Method</th><th>Status</th><th>Date</th></tr></thead>
+            <tbody>
+                {% for w in withdrawals %}
+                <tr><td>${{ w.amount }}</td><td>{{ w.method }}</td><td><span class="status-badge status-{{ w.status }}">{{ w.status }}</span></td><td>{{ w.created_at|date }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

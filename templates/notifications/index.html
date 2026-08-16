@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Notifications — {{ platform_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/student.css') }}">
+{% endblock %}
+{% block content %}
+<div class="container narrow">
+    <div class="panel">
+        <div class="panel-head">
+            <h3>Notifications</h3>
+            {% if notifications %}
+            <form method="post" action="{{ url_for('notification.mark_all_read') }}" class="inline-form">
+                <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                <button class="btn btn-outline-gold btn-sm">Mark All Read</button>
+            </form>
+            {% endif %}
+        </div>
+
+        {% if notifications %}
+        <div class="notification-list">
+            {% for n in notifications %}
+            <div class="notification-item {% if not n.is_read %}unread{% endif %}">
+                <div class="notification-icon">
+                    {% if n.notification_type == 'message' %}<i class="fa-solid fa-comment"></i>
+                    {% elif n.notification_type == 'proposal' %}<i class="fa-solid fa-paper-plane"></i>
+                    {% elif n.notification_type == 'hire' %}<i class="fa-solid fa-handshake"></i>
+                    {% elif n.notification_type == 'payment' %}<i class="fa-solid fa-dollar-sign"></i>
+                    {% elif n.notification_type == 'review' %}<i class="fa-solid fa-star"></i>
+                    {% elif n.notification_type == 'project' %}<i class="fa-solid fa-briefcase"></i>
+                    {% else %}<i class="fa-solid fa-bell"></i>{% endif %}
+                </div>
+                <div class="notification-body">
+                    <strong>{{ n.title }}</strong>
+                    <p class="muted small">{{ n.message }}</p>
+                    <span class="muted small">{{ n.created_at|timeago }}</span>
+                </div>
+                <div class="notification-actions">
+                    {% if n.link %}<a href="{{ n.link }}" class="btn btn-primary btn-sm">View</a>{% endif %}
+                    {% if not n.is_read %}
+                    <form method="post" action="{{ url_for('notification.mark_read', notification_id=n.id) }}" class="inline-form">
+                        <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                        <button class="btn btn-outline-gold btn-sm">Read</button>
+                    </form>
+                    {% endif %}
+                    <form method="post" action="{{ url_for('notification.delete', notification_id=n.id) }}" class="inline-form">
+                        <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+                        <button class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fa-solid fa-bell"></i>
+            <h4>No notifications</h4>
+            <p>You're all caught up!</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

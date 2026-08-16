@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Client Registration — {{ platform_name }}{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">{% endblock %}
+{% block content %}
+<section class="auth-section">
+    <div class="container">
+        <div class="auth-card auth-card-wide">
+            <div class="auth-header">
+                <h2>Register as a Client</h2>
+                <p>Post projects and hire talented students.</p>
+            </div>
+            <form method="post" enctype="multipart/form-data" class="auth-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Name *</label>
+                        <input type="text" name="name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" name="email" class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Password *</label>
+                        <input type="password" name="password" class="form-control" minlength="8" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm Password *</label>
+                        <input type="password" name="confirm_password" class="form-control" minlength="8" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Company / Organization *</label>
+                    <input type="text" name="company" class="form-control" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="text" name="phone" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>City</label>
+                        <input type="text" name="city" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea name="description" class="form-control" rows="3" placeholder="Tell students about your company and the kind of work you offer."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Profile Picture</label>
+                    <input type="file" name="profile_picture" class="form-control" accept="image/*">
+                </div>
+                <button type="submit" class="btn btn-gold btn-block btn-lg">Create Client Account</button>
+            </form>
+            <div class="auth-footer">
+                <p>Already have an account? <a href="{{ url_for('auth.login') }}" class="link-gold">Login</a></p>
+                <p>Are you a student? <a href="{{ url_for('auth.register_student') }}" class="link-gold">Register here</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

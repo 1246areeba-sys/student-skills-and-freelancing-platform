@@ -1,0 +1,57 @@
+{% extends "dashboard_base.html" %}
+{% block title %}Resume Builder — {{ platform_name }}{% endblock %}
+{% block page_title %}Resume Builder{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('student.dashboard') }}" class="sidebar-link"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+<a href="{{ url_for('student.profile') }}" class="sidebar-link"><i class="fa-solid fa-user"></i> My Profile</a>
+<a href="{{ url_for('student.skills') }}" class="sidebar-link"><i class="fa-solid fa-star"></i> My Skills</a>
+<a href="{{ url_for('student.portfolio') }}" class="sidebar-link"><i class="fa-solid fa-images"></i> Portfolio</a>
+<a href="{{ url_for('student.certificates') }}" class="sidebar-link"><i class="fa-solid fa-certificate"></i> Certificates</a>
+<a href="{{ url_for('student.resume_builder') }}" class="sidebar-link active"><i class="fa-solid fa-file-lines"></i> Resume Builder</a>
+{% endblock %}
+{% block content %}
+<div class="resume-actions-bar">
+    <p class="muted">Your resume is generated automatically from your profile, skills, portfolio, certificates and experience.</p>
+    <div>
+        <a href="{{ url_for('student.resume_view') }}" class="btn btn-primary"><i class="fa-solid fa-eye"></i> Preview</a>
+        <a href="{{ url_for('student.resume_print') }}" class="btn btn-gold" target="_blank"><i class="fa-solid fa-print"></i> Print / PDF</a>
+    </div>
+</div>
+
+<div class="resume-preview">
+    <div class="resume-header">
+        <h1>{{ student.user.name }}</h1>
+        <p>{{ student.university or '' }} • {{ student.education or '' }} • {{ student.user.city or '' }}</p>
+        <p class="resume-contact">{{ student.user.email }} • {{ student.user.phone or '' }}</p>
+    </div>
+    <div class="resume-section">
+        <h3>Summary</h3>
+        <p>{{ student.bio or 'Motivated student looking for freelance opportunities to build experience and grow.' }}</p>
+    </div>
+    <div class="resume-section">
+        <h3>Skills</h3>
+        <div class="skill-tags">
+            {% for s in student.skills %}<span class="tag">{{ s.skill.name }} ({{ s.skill_level }})</span>{% endfor %}
+        </div>
+    </div>
+    <div class="resume-section">
+        <h3>Experience Level</h3>
+        <p>{{ student.experience or 'Entry Level' }} • {{ student.availability or 'Full Time' }} • ${{ student.hourly_rate or 0 }}/hr</p>
+    </div>
+    <div class="resume-section">
+        <h3>Portfolio</h3>
+        {% for item in student.portfolios.all() %}
+        <div class="resume-item">
+            <strong>{{ item.title }}</strong> — {{ item.technologies or '' }}
+            {% if item.project_url %}<span class="muted"> ({{ item.project_url }})</span>{% endif %}
+        </div>
+        {% else %}<p class="muted">No portfolio items yet.</p>{% endfor %}
+    </div>
+    <div class="resume-section">
+        <h3>Certifications</h3>
+        {% for c in student.certificates.all() %}
+        <div class="resume-item"><strong>{{ c.title }}</strong> — {{ c.organization or '' }} ({{ c.issue_date|date if c.issue_date else '' }})</div>
+        {% else %}<p class="muted">No certifications yet.</p>{% endfor %}
+    </div>
+</div>
+{% endblock %}

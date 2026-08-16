@@ -1,0 +1,47 @@
+{% extends "admin/base.html" %}
+{% set title = 'Reports' %}
+{% block admin_content %}
+<div class="stat-grid">
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+        <div><div class="stat-num">{{ total_users }}</div><div class="stat-label">Total Users</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-user-graduate"></i></div>
+        <div><div class="stat-num">{{ total_students }}</div><div class="stat-label">Students</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-building"></i></div>
+        <div><div class="stat-num">{{ total_clients }}</div><div class="stat-label">Clients</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-briefcase"></i></div>
+        <div><div class="stat-num">{{ total_projects }}</div><div class="stat-label">Total Projects</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-folder-open"></i></div>
+        <div><div class="stat-num">{{ open_projects }}</div><div class="stat-label">Open Projects</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-check-double"></i></div>
+        <div><div class="stat-num">{{ completed_projects }}</div><div class="stat-label">Completed</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-dollar-sign"></i></div>
+        <div><div class="stat-num">{{ total_payments|money }}</div><div class="stat-label">Total Paid</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-coins"></i></div>
+        <div><div class="stat-num">{{ total_fees|money }}</div><div class="stat-label">Platform Fees</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-star"></i></div>
+        <div><div class="stat-num">{{ total_reviews }}</div><div class="stat-label">Reviews</div></div>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="panel-head"><h3>Platform Summary</h3></div>
+    <p>SkillBridge connects <strong>{{ total_students }}</strong> student freelancers with <strong>{{ total_clients }}</strong> clients across <strong>{{ total_projects }}</strong> projects. Total transaction volume processed: <strong class="text-gold">{{ total_payments|money }}</strong>, generating <strong class="text-gold">{{ total_fees|money }}</strong> in platform revenue.</p>
+</div>
+{% endblock %}

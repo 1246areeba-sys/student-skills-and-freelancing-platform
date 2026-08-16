@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}Find Projects — {{ platform_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/student.css') }}">
+{% endblock %}
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <h1>Find Projects</h1>
+        <p class="muted">Browse real freelance opportunities posted by clients.</p>
+    </div>
+</section>
+
+<div class="container">
+    <div class="marketplace-layout">
+        <!-- Filters -->
+        <aside class="filter-panel">
+            <form method="get" action="{{ url_for('projects.projects') }}" class="filter-form">
+                <h4>Search</h4>
+                <input type="text" name="q" class="form-control" placeholder="Keyword..." value="{{ filters.q or '' }}">
+
+                <h4>Category</h4>
+                <select name="category" class="form-control">
+                    <option value="">All Categories</option>
+                    {% for c in categories %}
+                    <option value="{{ c.id }}" {% if filters.category == c.id %}selected{% endif %}>{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+
+                <h4>Skill</h4>
+                <select name="skill" class="form-control">
+                    <option value="">All Skills</option>
+                    {% for s in skills %}
+                    <option value="{{ s.id }}" {% if filters.skill == s.id %}selected{% endif %}>{{ s.name }}</option>
+                    {% endfor %}
+                </select>
+
+                <h4>Project Type</h4>
+                <select name="project_type" class="form-control">
+                    <option value="">Any</option>
+                    <option value="Fixed" {% if filters.project_type == 'Fixed' %}selected{% endif %}>Fixed Price</option>
+                    <option value="Hourly" {% if filters.project_type == 'Hourly' %}selected{% endif %}>Hourly</option>
+                </select>
+
+                <h4>Location</h4>
+                <select name="location_type" class="form-control">
+                    <option value="">Any</option>
+                    <option value="Remote" {% if filters.location_type == 'Remote' %}selected{% endif %}>Remote</option>
+                    <option value="Onsite" {% if filters.location_type == 'Onsite' %}selected{% endif %}>Onsite</option>
+                    <option value="Hybrid" {% if filters.location_type == 'Hybrid' %}selected{% endif %}>Hybrid</option>
+                </select>
+
+                <h4>Max Budget ($)</h4>
+                <input type="number" name="budget_max" class="form-control" placeholder="e.g. 500" value="{{ filters.budget_max or '' }}">
+
+                <h4>Sort By</h4>
+                <select name="sort" class="form-control">
+                    <option value="newest" {% if filters.sort == 'newest' %}selected{% endif %}>Newest</option>
+                    <option value="budget_high" {% if filters.sort == 'budget_high' %}selected{% endif %}>Budget: High to Low</option>
+                    <option value="budget_low" {% if filters.sort == 'budget_low' %}selected{% endif %}>Budget: Low to High</option>
+                    <option value="deadline" {% if filters.sort == 'deadline' %}selected{% endif %}>Deadline: Soonest</option>
+                </select>
+
+                <button type="submit" class="btn btn-primary btn-block">Apply Filters</button>
+                <a href="{{ url_for('projects.projects') }}" class="btn btn-outline-gold btn-block">Reset</a>
+            </form>
+        </aside>
+
+        <!-- Results -->
+        <div class="marketplace-results">
+            <div class="results-bar">
+                <span class="muted">{{ projects|length }} project(s) on this page</span>
+            </div>
+
+            {% if projects %}
+            <div class="card-grid">
+                {% for project in projects %}
+                <div class="project-card">
+                    <div class="project-card-head">
+                        <span class="badge-type">{{ project.project_type }}</span>
+                        <span class="badge-status badge-{{ project.status }}">{{ project.status.replace('_',' ') }}</span>
+                    </div>
+                    <h4 class="project-title"><a href="{{ url_for('projects.detail', project_id=project.id) }}">{{ project.title }}</a></h4>
+                    <p class="muted small">{{ project.category.name if project.category else 'General' }} &middot; {{ project.location_type }}</p>
+                    <p class="project-desc">{{ project.description[:140] }}{% if project.description|length > 140 %}...{% endif %}</p>
+                    <div class="skill-tags">
+                        {% for sk in project.skill_names %}
+                        <span class="skill-tag">{{ sk }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="project-card-foot">
+                        <span class="text-gold font-bold">{{ project.budget|money }}</span>
+                        {% if project.deadline %}
+                        <span class="muted small"><i class="fa-regular fa-clock"></i> {{ project.deadline|date }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="project-card-foot">
+                        <span class="muted small"><i class="fa-solid fa-user-tie"></i> {{ project.client.company_name or project.client.user.name }}</span>
+                        <span class="muted small"><i class="fa-solid fa-paper-plane"></i> {{ project.proposal_count }} proposals</span>
+                    </div>
+                    <a href="{{ url_for('projects.detail', project_id=project.id) }}" class="btn btn-primary btn-sm btn-block">View Details</a>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if pagination.pages > 1 %}
+            <nav class="pagination">
+                {% for p in pagination.iter_pages() %}
+                    {% if p %}
+                        <a href="{{ url_for('projects.projects', page=p, q=filters.q, category=filters.category, skill=filters.skill, project_type=filters.project_type, location_type=filters.location_type, budget_max=filters.budget_max, sort=filters.sort) }}" class="page-link {% if p == pagination.page %}active{% endif %}">{{ p }}</a>
+                    {% else %}
+                        <span class="page-ellipsis">…</span>
+                    {% endif %}
+                {% endfor %}
+            </nav>
+            {% endif %}
+            {% else %}
+            <div class="empty-state">
+                <i class="fa-solid fa-folder-open"></i>
+                <h4>No projects found</h4>
+                <p>Try adjusting your filters or search terms.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

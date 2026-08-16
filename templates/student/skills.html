@@ -1,0 +1,69 @@
+{% extends "dashboard_base.html" %}
+{% block title %}My Skills — {{ platform_name }}{% endblock %}
+{% block page_title %}My Skills{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('student.dashboard') }}" class="sidebar-link"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+<a href="{{ url_for('student.profile') }}" class="sidebar-link"><i class="fa-solid fa-user"></i> My Profile</a>
+<a href="{{ url_for('student.skills') }}" class="sidebar-link active"><i class="fa-solid fa-star"></i> My Skills</a>
+<a href="{{ url_for('student.portfolio') }}" class="sidebar-link"><i class="fa-solid fa-images"></i> Portfolio</a>
+<a href="{{ url_for('student.assessments') }}" class="sidebar-link"><i class="fa-solid fa-clipboard-check"></i> Skill Assessments</a>
+<a href="{{ url_for('student.resume_builder') }}" class="sidebar-link"><i class="fa-solid fa-file-lines"></i> Resume Builder</a>
+{% endblock %}
+{% block content %}
+<div class="dashboard-grid-2">
+    <div class="panel">
+        <div class="panel-head"><h3>My Current Skills</h3></div>
+        {% if student.skills %}
+        <div class="skill-list">
+            {% for s in student.skills %}
+            <div class="skill-row">
+                <div>
+                    <strong>{{ s.skill.name }}</strong>
+                    <span class="badge-level">{{ s.skill_level }}</span>
+                </div>
+                <form method="post" action="{{ url_for('student.remove_skill', skill_id=s.skill_id) }}" class="inline-form" onsubmit="return confirm('Remove this skill?')">
+                    <button class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-text">You haven't added any skills yet.</p>
+        {% endif %}
+    </div>
+
+    <div class="panel">
+        <div class="panel-head"><h3>Add / Update Skill</h3></div>
+        <form method="post" class="form-card">
+            <div class="form-group">
+                <label>Select Skill</label>
+                <select name="skill_id" class="form-control" required>
+                    <option value="">-- Choose a skill --</option>
+                    {% for cat in categories %}
+                    <optgroup label="{{ cat.name }}">
+                        {% for sk in cat.skills %}
+                        <option value="{{ sk.id }}">{{ sk.name }}</option>
+                        {% endfor %}
+                    </optgroup>
+                    {% endfor %}
+                    <optgroup label="Other">
+                        {% for sk in all_skills %}
+                        {% if not sk.category_id %}<option value="{{ sk.id }}">{{ sk.name }}</option>{% endif %}
+                        {% endfor %}
+                    </optgroup>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Skill Level</label>
+                <select name="skill_level" class="form-control">
+                    <option>Beginner</option>
+                    <option selected>Intermediate</option>
+                    <option>Advanced</option>
+                    <option>Expert</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-gold btn-block">Add Skill</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

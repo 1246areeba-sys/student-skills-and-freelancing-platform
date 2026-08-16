@@ -1,0 +1,46 @@
+# Environment
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+venv/
+env/
+.venv/
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Database
+*.db
+*.sqlite3
+
+# Migrations runtime (keep migration scripts, ignore pycache)
+migrations/__pycache__/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Uploads (real user files, keep folder structure)
+static/uploads/*
+!static/uploads/.gitkeep
+static/images/banners/*
+!static/images/banners/.gitkeep
+static/images/profiles/*
+!static/images/profiles/.gitkeep
+static/images/portfolio/*
+!static/images/portfolio/.gitkeep
+static/images/certificates/*
+!static/images/certificates/.gitkeep
+
+# Logs
+*.log

@@ -1,0 +1,78 @@
+{% extends "dashboard_base.html" %}
+{% block title %}Post Project — {{ platform_name }}{% endblock %}
+{% block page_title %}Post a Project{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('client.dashboard') }}" class="sidebar-link"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+<a href="{{ url_for('client.profile') }}" class="sidebar-link"><i class="fa-solid fa-user"></i> My Profile</a>
+<a href="{{ url_for('client.post_project') }}" class="sidebar-link active"><i class="fa-solid fa-plus"></i> Post Project</a>
+<a href="{{ url_for('client.my_projects') }}" class="sidebar-link"><i class="fa-solid fa-briefcase"></i> My Projects</a>
+{% endblock %}
+{% block content %}
+<div class="panel">
+    <div class="panel-head"><h3>Project Details</h3></div>
+    <form method="post" enctype="multipart/form-data" class="form-card">
+        <div class="form-group">
+            <label>Project Title *</label>
+            <input type="text" name="title" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label>Description *</label>
+            <textarea name="description" class="form-control" rows="5" required></textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Category</label>
+                <select name="category_id" class="form-control">
+                    <option value="">-- Select --</option>
+                    {% for c in categories %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Budget ($)</label>
+                <input type="number" step="0.01" name="budget" class="form-control" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Project Type</label>
+                <select name="project_type" class="form-control">
+                    <option>Fixed</option><option>Hourly</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Location Type</label>
+                <select name="location_type" class="form-control">
+                    <option>Remote</option><option>Onsite</option><option>Hybrid</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Deadline</label>
+                <input type="date" name="deadline" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Freelancers Needed</label>
+                <input type="number" name="freelancers_needed" class="form-control" value="1" min="1">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Location (if onsite/hybrid)</label>
+            <input type="text" name="location" class="form-control">
+        </div>
+        <div class="form-group">
+            <label>Required Skills</label>
+            <div class="checkbox-grid">
+                {% for sk in skills %}
+                <label class="checkbox"><input type="checkbox" name="skills" value="{{ sk.id }}"> {{ sk.name }}</label>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Attachment</label>
+            <input type="file" name="attachment" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-gold btn-lg">Post Project</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "admin/base.html" %}
+{% set title = 'Dashboard' %}
+{% block admin_content %}
+<div class="stat-grid">
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-user-graduate"></i></div>
+        <div><div class="stat-num">{{ total_students }}</div><div class="stat-label">Students</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-building"></i></div>
+        <div><div class="stat-num">{{ total_clients }}</div><div class="stat-label">Clients</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-briefcase"></i></div>
+        <div><div class="stat-num">{{ active_projects }}</div><div class="stat-label">Active Projects</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-check-double"></i></div>
+        <div><div class="stat-num">{{ completed_projects }}</div><div class="stat-label">Completed</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-paper-plane"></i></div>
+        <div><div class="stat-num">{{ total_proposals }}</div><div class="stat-label">Proposals</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-dollar-sign"></i></div>
+        <div><div class="stat-num">{{ total_earnings|money }}</div><div class="stat-label">Total Paid</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-coins"></i></div>
+        <div><div class="stat-num">{{ platform_revenue|money }}</div><div class="stat-label">Platform Revenue</div></div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon"><i class="fa-solid fa-money-bill-transfer"></i></div>
+        <div><div class="stat-num">{{ pending_withdrawals }}</div><div class="stat-label">Pending Withdrawals</div></div>
+    </div>
+</div>
+
+<div class="admin-two-col">
+    <div class="panel">
+        <div class="panel-head"><h3>Recent Users</h3></div>
+        <table class="admin-table">
+            <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Joined</th></tr></thead>
+            <tbody>
+            {% for u in recent_users %}
+            <tr>
+                <td>{{ u.name }}</td>
+                <td class="muted small">{{ u.email }}</td>
+                <td><span class="badge-role">{{ u.role }}</span></td>
+                <td><span class="badge-status badge-{{ u.status }}">{{ u.status }}</span></td>
+                <td class="muted small">{{ u.created_at|date }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="panel">
+        <div class="panel-head"><h3>Recent Projects</h3></div>
+        <table class="admin-table">
+            <thead><tr><th>Title</th><th>Client</th><th>Budget</th><th>Status</th></tr></thead>
+            <tbody>
+            {% for p in recent_projects %}
+            <tr>
+                <td><a href="{{ url_for('projects.detail', project_id=p.id) }}">{{ p.title }}</a></td>
+                <td class="muted small">{{ p.client.company_name or p.client.user.name }}</td>
+                <td>{{ p.budget|money }}</td>
+                <td><span class="badge-status badge-{{ p.status }}">{{ p.status }}</span></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <div class="panel-foot">
+            <a href="{{ url_for('admin.reports') }}" class="btn btn-outline-gold btn-sm">View Full Reports</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

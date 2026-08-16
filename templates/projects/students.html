@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Find Students — {{ platform_name }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/student.css') }}">
+{% endblock %}
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <h1>Find Students</h1>
+        <p class="muted">Discover talented student freelancers ready to work on your projects.</p>
+    </div>
+</section>
+
+<div class="container">
+    <div class="marketplace-layout">
+        <aside class="filter-panel">
+            <form method="get" action="{{ url_for('projects.students') }}" class="filter-form">
+                <h4>Search</h4>
+                <input type="text" name="q" class="form-control" placeholder="Name, university, bio..." value="{{ filters.q or '' }}">
+
+                <h4>Category</h4>
+                <select name="category" class="form-control">
+                    <option value="">All Categories</option>
+                    {% for c in categories %}
+                    <option value="{{ c.id }}" {% if filters.category == c.id %}selected{% endif %}>{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+
+                <h4>Skill</h4>
+                <select name="skill" class="form-control">
+                    <option value="">All Skills</option>
+                    {% for s in skills %}
+                    <option value="{{ s.id }}" {% if filters.skill == s.id %}selected{% endif %}>{{ s.name }}</option>
+                    {% endfor %}
+                </select>
+
+                <h4>Availability</h4>
+                <select name="availability" class="form-control">
+                    <option value="">Any</option>
+                    <option value="Full Time" {% if filters.availability == 'Full Time' %}selected{% endif %}>Full Time</option>
+                    <option value="Part Time" {% if filters.availability == 'Part Time' %}selected{% endif %}>Part Time</option>
+                    <option value="Weekends" {% if filters.availability == 'Weekends' %}selected{% endif %}>Weekends</option>
+                </select>
+
+                <h4>University</h4>
+                <input type="text" name="university" class="form-control" placeholder="e.g. MIT" value="{{ filters.university or '' }}">
+
+                <h4>Max Rate ($/hr)</h4>
+                <input type="number" name="max_rate" class="form-control" placeholder="e.g. 40" value="{{ filters.max_rate or '' }}">
+
+                <h4>Sort By</h4>
+                <select name="sort" class="form-control">
+                    <option value="newest" {% if filters.sort == 'newest' %}selected{% endif %}>Newest</option>
+                    <option value="rate_low" {% if filters.sort == 'rate_low' %}selected{% endif %}>Rate: Low to High</option>
+                    <option value="rate_high" {% if filters.sort == 'rate_high' %}selected{% endif %}>Rate: High to Low</option>
+                </select>
+
+                <button type="submit" class="btn btn-primary btn-block">Apply Filters</button>
+                <a href="{{ url_for('projects.students') }}" class="btn btn-outline-gold btn-block">Reset</a>
+            </form>
+        </aside>
+
+        <div class="marketplace-results">
+            <div class="results-bar">
+                <span class="muted">{{ students|length }} student(s) on this page</span>
+            </div>
+
+            {% if students %}
+            <div class="card-grid">
+                {% for stu in students %}
+                <div class="student-card">
+                    <img src="{{ url_for('static', filename=stu.user.display_picture) }}" class="avatar-lg" onerror="this.src='{{ url_for('static', filename='images/default-avatar.png') }}'">
+                    <h4>{{ stu.user.name }}</h4>
+                    <p class="muted small">{{ stu.university or 'Independent Student' }}</p>
+                    {% if stu.is_verified %}<span class="verified-badge" title="Verified"><i class="fa-solid fa-circle-check"></i> Verified</span>{% endif %}
+                    <div class="skill-tags">
+                        {% for sk in stu.skill_names[:5] %}
+                        <span class="skill-tag">{{ sk }}</span>
+                        {% endfor %}
+                    </div>
+                    <div class="student-card-foot">
+                        <span class="text-gold font-bold">${{ stu.hourly_rate }}/hr</span>
+                        <span class="muted small">{{ stu.availability }}</span>
+                    </div>
+                    <a href="{{ url_for('projects.student_public', student_id=stu.id) }}" class="btn btn-primary btn-sm btn-block">View Profile</a>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if pagination.pages > 1 %}
+            <nav class="pagination">
+                {% for p in pagination.iter_pages() %}
+                    {% if p %}
+                        <a href="{{ url_for('projects.students', page=p, q=filters.q, category=filters.category, skill=filters.skill, availability=filters.availability, university=filters.university, max_rate=filters.max_rate, sort=filters.sort) }}" class="page-link {% if p == pagination.page %}active{% endif %}">{{ p }}</a>
+                    {% else %}
+                        <span class="page-ellipsis">…</span>
+                    {% endif %}
+                {% endfor %}
+            </nav>
+            {% endif %}
+            {% else %}
+            <div class="empty-state">
+                <i class="fa-solid fa-users"></i>
+                <h4>No students found</h4>
+                <p>Try adjusting your filters.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

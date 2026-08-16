@@ -1,0 +1,52 @@
+"""Notification routes: list, mark read, mark all read, delete."""
+from flask import Blueprint, render_template, redirect, url_for, flash
+from flask_login import login_required, current_user
+
+from extensions import db
+from models.notification import Notification
+
+notification_bp = Blueprint("notification", __name__, url_prefix="/notifications")
+
+
+@notification_bp.route("/")
+@login_required
+def index():
+    notifications = Notification.query.filter_by(
+        user_id=current_user.id
+    ).order_by(Notification.created_at.desc()).all()
+    return render_template("notifications/index.html", notifications=notifications)
+
+
+@notification_bp.route("/mark-read/<int:notification_id>", methods=["POST"])
+@login_required
+def mark_read(notification_id):
+    n = Notification.query.filter_by(
+        id=notification_id, user_id=current_user.id
+    ).first_or_404()
+    n.is_read = True
+    db.session.commit()
+    flash("Notification marked as read.", "success")
+    return redirect(url_for("notification.index"))
+
+
+@notification_bp.route("/mark-all-read", methods=["POST"])
+@login_required
+def mark_all_read():
+    Notification.query.filter_by(user_id=current_user.id, is_read=False).update(
+        {"is_read": True}
+    )
+    db.session.commit()
+    flash("All notifications marked as read.", "success")
+    return redirect(url_for("notification.index"))
+
+
+@notification_bp.route("/delete/<int:notification_id>", methods=["POST"])
+@login_required
+def delete(notification_id):
+    n = Notification.query.filter_by(
+        id=notification_id, user_id=current_user.id
+    ).first_or_404()
+    db.session.delete(n)
+    db.session.commit()
+    flash("Notification deleted.", "info")
+    return redirect(url_for("notification.index"))
