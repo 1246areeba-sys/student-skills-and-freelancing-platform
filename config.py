@@ -19,12 +19,17 @@ class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev-only-change-me")
     DEBUG = os.environ.get("FLASK_DEBUG", "0") == "1"
 
-    # --- Database (PostgreSQL via Neon) ---
-    # Fall back to a local SQLite file ONLY if DATABASE_URL is not provided,
-    # so the app can still boot for quick local testing.
+    # --- Database (SQLite) ---
+    # The platform uses a local SQLite file as its primary database.
+    # To use a different SQLite path, set DATABASE_URL (e.g. sqlite:///other.db).
+    # PostgreSQL support has been removed; this app is SQLite-only.
     _db_url = os.environ.get("DATABASE_URL")
     if _db_url and _db_url.startswith("postgres://"):
-        _db_url = _db_url.replace("postgres://", "postgresql://", 1)
+        # Reject legacy PostgreSQL URLs — this app no longer supports them.
+        raise RuntimeError(
+            "PostgreSQL is no longer supported. Use a sqlite:/// DATABASE_URL or "
+            "leave DATABASE_URL unset to use the default app.db SQLite database."
+        )
     SQLALCHEMY_DATABASE_URI = _db_url or "sqlite:///" + os.path.join(BASE_DIR, "app.db")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
