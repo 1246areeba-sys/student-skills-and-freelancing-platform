@@ -143,12 +143,26 @@ def create_app(config_class=Config):
             platform_name = SiteSetting.get("site_name", app.config["PLATFORM_NAME"])
         except Exception:
             platform_name = app.config["PLATFORM_NAME"]
+        # Contact details shown on the public Contact Us page (admin-editable).
+        contact_email = "support@skillbridge.test"
+        contact_phone = "+1 (555) 000-0000"
+        contact_address = "123 University Ave, Innovation City"
+        try:
+            contact_email = SiteSetting.get("contact_email", contact_email)
+            contact_phone = SiteSetting.get("contact_phone", contact_phone)
+            contact_address = SiteSetting.get("contact_address", contact_address)
+        except Exception:
+            pass
+
         return {
             "unread_notifications": unread_notifications,
             "unread_messages": unread_messages,
             "site_banners": visible_banners,
             "site_logo": site_logo,
             "platform_name": platform_name,
+            "contact_email": contact_email,
+            "contact_phone": contact_phone,
+            "contact_address": contact_address,
         }
 
     # ---- CSRF token helpers for non-WTF forms ----

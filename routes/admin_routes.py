@@ -1457,6 +1457,26 @@ def site_name():
         return redirect(url_for("admin.site_name"))
     return render_template("admin/site_name_form.html", current_name=current_name)
 
+@admin_bp.route("/settings/contact", methods=["GET", "POST"])
+@login_required
+@admin_required
+def contact_info():
+    """Allow the admin to edit the contact details shown on the Contact Us page."""
+    current = {
+        "email": SiteSetting.get("contact_email", "support@skillbridge.test"),
+        "phone": SiteSetting.get("contact_phone", "+1 (555) 000-0000"),
+        "address": SiteSetting.get(
+            "contact_address", "123 University Ave, Innovation City"
+        ),
+    }
+    if request.method == "POST":
+        SiteSetting.set("contact_email", request.form.get("contact_email", "").strip())
+        SiteSetting.set("contact_phone", request.form.get("contact_phone", "").strip())
+        SiteSetting.set("contact_address", request.form.get("contact_address", "").strip())
+        flash("Contact information updated.", "success")
+        return redirect(url_for("admin.contact_info"))
+    return render_template("admin/contact_form.html", current=current)
+
 
 # ---------------------------------------------------------------------------
 # Banners

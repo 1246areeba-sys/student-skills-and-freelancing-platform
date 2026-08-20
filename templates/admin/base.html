@@ -33,6 +33,7 @@
             <a href="{{ url_for('admin.banners') }}" class="admin-link {% if request.endpoint == 'admin.banners' %}active{% endif %}"><i class="fa-solid fa-rectangle-ad"></i> Banners</a>
             <a href="{{ url_for('admin.site_logo') }}" class="admin-link {% if request.endpoint == 'admin.site_logo' %}active{% endif %}"><i class="fa-solid fa-image"></i> Logo</a>
             <a href="{{ url_for('admin.site_name') }}" class="admin-link {% if request.endpoint == 'admin.site_name' %}active{% endif %}"><i class="fa-solid fa-signature"></i> Site Name</a>
+            <a href="{{ url_for('admin.contact_info') }}" class="admin-link {% if request.endpoint == 'admin.contact_info' %}active{% endif %}"><i class="fa-solid fa-address-book"></i> Contact Info</a>
             <a href="{{ url_for('admin.messages') }}" class="admin-link {% if request.endpoint == 'admin.messages' %}active{% endif %}"><i class="fa-solid fa-comments"></i> Messages</a>
             <a href="{{ url_for('admin.milestones') }}" class="admin-link {% if request.endpoint == 'admin.milestones' %}active{% endif %}"><i class="fa-solid fa-flag-checkered"></i> Milestones</a>
             <a href="{{ url_for('admin.reports') }}" class="admin-link {% if request.endpoint == 'admin.reports' %}active{% endif %}"><i class="fa-solid fa-chart-line"></i> Reports</a>
