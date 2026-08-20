@@ -2,6 +2,10 @@
 {% set title = 'Users' %}
 {% block admin_content %}
 <div class="panel">
+    <div class="panel-head d-flex justify-between align-center">
+        <h3>All Users</h3>
+        <a href="{{ url_for('admin.add_user') }}" class="btn btn-primary btn-sm"><i class="fa-solid fa-user-plus"></i> Add User</a>
+    </div>
     <form method="get" action="{{ url_for('admin.users') }}" class="admin-filter-bar">
         <select name="role" class="form-control">
             <option value="">All Roles</option>

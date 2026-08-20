@@ -16,8 +16,8 @@ class Review(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     project = db.relationship("Project", back_populates="reviews")
-    reviewer = db.relationship("User", foreign_keys=[reviewer_id])
-    reviewed_user = db.relationship("User", foreign_keys=[reviewed_user_id])
+    reviewer = db.relationship("User", foreign_keys=[reviewer_id], back_populates="reviews_given")
+    reviewed_user = db.relationship("User", foreign_keys=[reviewed_user_id], back_populates="reviews_received")
 
     __table_args__ = (
         db.UniqueConstraint("project_id", "reviewer_id", "reviewed_user_id", name="uq_review"),

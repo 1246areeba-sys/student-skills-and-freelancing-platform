@@ -6,6 +6,137 @@
     min-height: 100vh;
 }
 
+/* ---------- Admin dashboard stat cards (colorful) ---------- */
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 18px;
+    margin-bottom: 26px;
+}
+
+.stat-card {
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid transparent;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card::after {
+    content: "";
+    position: absolute;
+    right: -30px;
+    bottom: -30px;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    opacity: 0.08;
+    background: currentColor;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow);
+}
+
+.stat-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: #fff;
+    flex-shrink: 0;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.18);
+}
+
+/* Distinct gradient per card (nth-child order matches dashboard.html) */
+.stat-card:nth-child(1) .stat-icon {
+    background: linear-gradient(135deg, #1E3A8A, #3B5BC9);
+}
+
+.stat-card:nth-child(2) .stat-icon {
+    background: linear-gradient(135deg, #7C3AED, #A855F7);
+}
+
+.stat-card:nth-child(3) .stat-icon {
+    background: linear-gradient(135deg, #0EA5E9, #38BDF8);
+}
+
+.stat-card:nth-child(4) .stat-icon {
+    background: linear-gradient(135deg, #16A34A, #4ADE80);
+}
+
+.stat-card:nth-child(5) .stat-icon {
+    background: linear-gradient(135deg, #F59E0B, #FBBF24);
+}
+
+.stat-card:nth-child(6) .stat-icon {
+    background: linear-gradient(135deg, #059669, #10B981);
+}
+
+.stat-card:nth-child(7) .stat-icon {
+    background: linear-gradient(135deg, #DB2777, #F472B6);
+}
+
+.stat-card:nth-child(8) .stat-icon {
+    background: linear-gradient(135deg, #DC2626, #F87171);
+}
+
+/* Tinted left accent matching the icon gradient */
+.stat-card:nth-child(1) {
+    border-left: 4px solid #1E3A8A;
+}
+
+.stat-card:nth-child(2) {
+    border-left: 4px solid #7C3AED;
+}
+
+.stat-card:nth-child(3) {
+    border-left: 4px solid #0EA5E9;
+}
+
+.stat-card:nth-child(4) {
+    border-left: 4px solid #16A34A;
+}
+
+.stat-card:nth-child(5) {
+    border-left: 4px solid #F59E0B;
+}
+
+.stat-card:nth-child(6) {
+    border-left: 4px solid #059669;
+}
+
+.stat-card:nth-child(7) {
+    border-left: 4px solid #DB2777;
+}
+
+.stat-card:nth-child(8) {
+    border-left: 4px solid #DC2626;
+}
+
+.stat-num {
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: var(--navy);
+    line-height: 1.1;
+}
+
+.stat-label {
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-weight: 500;
+}
+
 .admin-sidebar {
     width: 250px;
     background: var(--navy);
@@ -282,20 +413,66 @@
     color: var(--muted);
 }
 
+/* Hamburger toggle button in the admin topbar (mobile) */
+.admin-sidebar-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--navy);
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+.admin-topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+/* Backdrop behind the off-canvas sidebar on mobile */
+.admin-sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    z-index: 90;
+}
+
+.admin-sidebar-backdrop.show {
+    display: block;
+}
+
 @media (max-width: 1000px) {
     .admin-sidebar {
         position: fixed;
         left: -260px;
+        top: 0;
         z-index: 100;
-        transition: left 0.3s;
+        transition: left 0.3s ease;
+        box-shadow: var(--shadow);
     }
 
     .admin-sidebar.open {
         left: 0;
     }
 
+    .admin-sidebar-toggle {
+        display: inline-flex;
+    }
+
     .admin-two-col {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (min-width: 1001px) {
+    .admin-sidebar-backdrop {
+        display: none !important;
     }
 }
 
@@ -311,6 +488,64 @@
 .panel-head h3 {
     margin: 0;
     font-size: 1.15rem;
+    position: relative;
+    padding-left: 14px;
+}
+
+.panel-head h3::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 18px;
+    border-radius: 4px;
+    background: var(--gold);
+}
+
+/* ---------- Admin dashboard welcome bar ---------- */
+.admin-welcome {
+    background: linear-gradient(120deg, var(--royal) 0%, var(--royal-dark) 60%, #0b1f4d 100%);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 26px 30px;
+    margin-bottom: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+}
+
+.admin-welcome::after {
+    content: "";
+    position: absolute;
+    right: -40px;
+    top: -40px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.28), transparent 70%);
+    pointer-events: none;
+}
+
+.admin-welcome h2 {
+    color: #fff;
+    font-size: 1.5rem;
+    margin-bottom: 6px;
+}
+
+.admin-welcome p {
+    color: rgba(255, 255, 255, 0.78);
+    margin: 0;
+}
+
+.admin-welcome .btn-gold {
+    position: relative;
+    z-index: 1;
 }
 
 .form-row {
@@ -344,18 +579,41 @@
 }
 
 .badge-open,
-.badge-active { background: #dcfce7; color: #166534; }
+.badge-active {
+    background: #dcfce7;
+    color: #166534;
+}
+
 .badge-in_progress,
 .badge-pending,
-.badge-processing { background: #fef3c7; color: #92400e; }
+.badge-processing {
+    background: #fef3c7;
+    color: #92400e;
+}
+
 .badge-completed,
 .badge-approved,
-.badge-paid { background: #dbeafe; color: #1e40af; }
+.badge-paid {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
 .badge-cancelled,
 .badge-rejected,
-.badge-failed { background: #fee2e2; color: #991b1b; }
-.badge-draft { background: #e5e7eb; color: #374151; }
-.badge-closed { background: #ede9fe; color: #5b21b6; }
+.badge-failed {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.badge-draft {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.badge-closed {
+    background: #ede9fe;
+    color: #5b21b6;
+}
 
 /* ---------- Project detail ---------- */
 .detail-grid {
@@ -399,4 +657,43 @@
     gap: 10px;
     flex-wrap: wrap;
     margin-top: 10px;
+}
+
+
+/* Logo management */
+.logo-preview-box {
+    margin: 1rem 0 1.5rem;
+    padding: 1rem;
+    background: #f8f9fc;
+    border: 1px solid #e3e6f0;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.logo-preview-img {
+    max-height: 64px;
+    max-width: 240px;
+    object-fit: contain;
+    border-radius: 6px;
+    background: #fff;
+    padding: 4px;
+    border: 1px solid #e3e6f0;
+}
+
+.brand-name-lg {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #2e2e3a;
+    letter-spacing: 0.2px;
+}
+
+/* Hide the global site navbar/banners/footer on admin pages so they
+   don't overlap the admin layout. The admin layout scrolls normally. */
+body.is-admin .navbar,
+body.is-admin .site-banners,
+body.is-admin .footer {
+    display: none !important;
 }

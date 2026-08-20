@@ -95,6 +95,7 @@
                 {% if student.user.city %}<div class="stat-row"><span>Location</span><strong>{{ student.user.city }}</strong></div>{% endif %}
 
                 {% if current_user.is_authenticated and current_user.is_client %}
+                <a href="{{ url_for('client.hire_student', student_id=student.id) }}" class="btn btn-gold btn-block"><i class="fa-solid fa-handshake"></i> Hire Student</a>
                 <a href="{{ url_for('message.chat', user_id=student.user.id) }}" class="btn btn-primary btn-block"><i class="fa-solid fa-comment"></i> Message</a>
                 <form method="post" action="{{ url_for('projects.toggle_wishlist') }}" class="inline-form btn-block">
                     <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
@@ -103,6 +104,7 @@
                     <button class="btn btn-outline-danger btn-block"><i class="fa-solid fa-heart"></i> Save</button>
                 </form>
                 {% elif not current_user.is_authenticated %}
+                <a href="{{ url_for('auth.login', next=url_for('client.hire_student', student_id=student.id)) }}" class="btn btn-gold btn-block"><i class="fa-solid fa-handshake"></i> Hire Student</a>
                 <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-block">Login to Contact</a>
                 {% endif %}
             </div>

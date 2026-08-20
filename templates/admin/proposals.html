@@ -2,6 +2,10 @@
 {% set title = 'Proposals' %}
 {% block admin_content %}
 <div class="panel">
+    <div class="panel-head">
+        <h3>Proposals</h3>
+        <a href="{{ url_for('admin.add_proposal') }}" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Add Proposal</a>
+    </div>
     <table class="admin-table">
         <thead><tr><th>Project</th><th>Student</th><th>Price</th><th>Delivery</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
         <tbody>

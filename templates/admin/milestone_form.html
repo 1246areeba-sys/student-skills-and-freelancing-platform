@@ -1,26 +1,35 @@
 {% extends "admin/base.html" %}
-{% set title = 'Edit Milestone' %}
+{% set title = 'Milestone' %}
 {% block admin_content %}
 <div class="panel narrow-panel">
-    <div class="panel-head"><h3>Edit Milestone — {{ milestone.title }}</h3></div>
-    <form method="post" action="{{ url_for('admin.edit_milestone', milestone_id=milestone.id) }}">
+    <div class="panel-head"><h3>{% if milestone %}Edit Milestone — {{ milestone.title }}{% else %}Add Milestone{% endif %}</h3></div>
+    <form method="post" action="{% if milestone %}{{ url_for('admin.edit_milestone', milestone_id=milestone.id) }}{% else %}{{ url_for('admin.add_milestone') }}{% endif %}">
         <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
         <div class="form-group">
-            <label>Title</label>
-            <input type="text" name="title" class="form-control" value="{{ milestone.title }}" required>
+            <label>Project *</label>
+            <select name="project_id" class="form-control" required>
+                <option value="">— Select Project —</option>
+                {% for p in projects %}
+                <option value="{{ p.id }}" {% if milestone and p.id == milestone.project_id %}selected{% endif %}>{{ p.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Title *</label>
+            <input type="text" name="title" class="form-control" value="{{ milestone.title if milestone else '' }}" required>
         </div>
         <div class="form-group">
             <label>Description</label>
-            <textarea name="description" class="form-control" rows="3">{{ milestone.description or '' }}</textarea>
+            <textarea name="description" class="form-control" rows="3">{{ milestone.description or '' if milestone else '' }}</textarea>
         </div>
         <div class="form-row">
             <div class="form-group">
                 <label>Amount ($)</label>
-                <input type="number" step="0.01" name="amount" class="form-control" value="{{ milestone.amount or 0 }}">
+                <input type="number" step="0.01" name="amount" class="form-control" value="{{ milestone.amount or 0 if milestone else 0 }}">
             </div>
             <div class="form-group">
                 <label>Deadline</label>
-                <input type="date" name="deadline" class="form-control" value="{{ milestone.deadline.isoformat() if milestone.deadline else '' }}">
+                <input type="date" name="deadline" class="form-control" value="{{ milestone.deadline.isoformat() if milestone and milestone.deadline else '' }}">
             </div>
         </div>
         <div class="form-row">
@@ -28,7 +37,7 @@
                 <label>Status</label>
                 <select name="status" class="form-control">
                     {% for opt in ['pending', 'in_progress', 'submitted', 'approved', 'revision', 'completed'] %}
-                    <option value="{{ opt }}" {% if milestone.status == opt %}selected{% endif %}>{{ opt }}</option>
+                    <option value="{{ opt }}" {% if milestone and milestone.status == opt %}selected{% endif %}>{{ opt }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -36,12 +45,12 @@
                 <label>Payment Status</label>
                 <select name="payment_status" class="form-control">
                     {% for opt in ['unpaid', 'paid'] %}
-                    <option value="{{ opt }}" {% if milestone.payment_status == opt %}selected{% endif %}>{{ opt }}</option>
+                    <option value="{{ opt }}" {% if milestone and milestone.payment_status == opt %}selected{% endif %}>{{ opt }}</option>
                     {% endfor %}
                 </select>
             </div>
         </div>
-        <button class="btn btn-primary btn-block">Save Changes</button>
+        <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
         <a href="{{ url_for('admin.milestones') }}" class="btn btn-outline-gold btn-block">Cancel</a>
     </form>
 </div>

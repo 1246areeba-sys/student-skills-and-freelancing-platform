@@ -2,6 +2,10 @@
 {% set title = 'Clients' %}
 {% block admin_content %}
 <div class="panel">
+    <div class="panel-head">
+        <h3>Clients</h3>
+        <a href="{{ url_for('admin.add_client') }}" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Add Client</a>
+    </div>
     <table class="admin-table">
         <thead><tr><th>Client</th><th>Company</th><th>Email</th><th>City</th><th>Projects</th><th>Actions</th></tr></thead>
         <tbody>

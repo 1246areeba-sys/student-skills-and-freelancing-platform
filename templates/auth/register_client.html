@@ -10,6 +10,7 @@
                 <p>Post projects and hire talented students.</p>
             </div>
             <form method="post" enctype="multipart/form-data" class="auth-form">
+                <input type="hidden" name="next" value="{{ next or '' }}">
                 <div class="form-row">
                     <div class="form-group">
                         <label>Name *</label>

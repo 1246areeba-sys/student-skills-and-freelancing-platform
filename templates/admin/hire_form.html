@@ -1,0 +1,54 @@
+{% extends "admin/base.html" %}
+{% set title = 'Hire Student' %}
+{% block admin_content %}
+<div class="panel narrow-panel">
+    <div class="panel-head"><h3>Hire a Student</h3></div>
+    <form method="post" action="{{ url_for('admin.add_hire') }}">
+        <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+        <div class="form-group">
+            <label>Project <span class="req">*</span></label>
+            <select name="project_id" class="form-control" required>
+                <option value="">— Select Project —</option>
+                {% for p in projects %}
+                <option value="{{ p.id }}">{{ p.title }} ({{ p.client.company_name or p.client.user.name }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Student <span class="req">*</span></label>
+            <select name="student_id" class="form-control" required>
+                <option value="">— Select Student —</option>
+                {% for s in students %}
+                <option value="{{ s.id }}">{{ s.user.name }}{% if s.university %} — {{ s.university }}{% endif %}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Client <span class="req">*</span></label>
+            <select name="client_id" class="form-control" required>
+                <option value="">— Select Client —</option>
+                {% for c in clients %}
+                <option value="{{ c.id }}">{{ c.user.name }}{% if c.company_name %} ({{ c.company_name }}){% endif %}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Contract Amount ($) <span class="req">*</span></label>
+                <input type="number" step="0.01" name="amount" class="form-control" value="0" min="0.01" required>
+            </div>
+            <div class="form-group">
+                <label>Hire Status</label>
+                <select name="status" class="form-control">
+                    {% for opt in ['active', 'completed', 'cancelled'] %}
+                    <option value="{{ opt }}">{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <p class="muted small">A pending payment (10% platform fee) and a hire notification will be created automatically. The project will be marked as <strong>in progress</strong>.</p>
+        <button class="btn btn-primary btn-block">Hire Student</button>
+        <a href="{{ url_for('admin.hired') }}" class="btn btn-outline-gold btn-block">Cancel</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,28 +1,41 @@
 /* SkillBridge — admin.js
-   Admin sidebar toggle, table row confirmations, inline select auto-submit. */
+   Admin sidebar toggle (mobile), backdrop, and close-on-navigate. */
 (function () {
     "use strict";
     document.addEventListener("DOMContentLoaded", function () {
-        // Admin sidebar toggle for mobile
-        var adminSidebar = document.querySelector(".admin-sidebar");
-        // Reuse topbar hamburger if present
-        var hamburger = document.querySelector(".admin-topbar .sidebar-toggle");
-        if (hamburger && adminSidebar) {
-            hamburger.addEventListener("click", function () { adminSidebar.classList.toggle("open"); });
+        var sidebar = document.querySelector(".admin-sidebar");
+        var toggle = document.getElementById("adminSidebarToggle");
+        var backdrop = document.getElementById("adminSidebarBackdrop");
+
+        function openSidebar() {
+            if (sidebar) sidebar.classList.add("open");
+            if (backdrop) backdrop.classList.add("show");
+        }
+        function closeSidebar() {
+            if (sidebar) sidebar.classList.remove("open");
+            if (backdrop) backdrop.classList.remove("show");
         }
 
-        // Confirm destructive admin actions
-        document.querySelectorAll("form[onsubmit]").forEach(function () { /* handled inline */ });
-
-        // Smooth scroll for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(function (a) {
-            a.addEventListener("click", function (e) {
-                var id = a.getAttribute("href");
-                if (id.length > 1) {
-                    var target = document.querySelector(id);
-                    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: "smooth" }); }
-                }
+        if (toggle) {
+            toggle.addEventListener("click", function () {
+                if (sidebar && sidebar.classList.contains("open")) closeSidebar();
+                else openSidebar();
             });
+        }
+        if (backdrop) {
+            backdrop.addEventListener("click", closeSidebar);
+        }
+
+        // Close the off-canvas sidebar after tapping a nav link (mobile)
+        if (sidebar) {
+            sidebar.querySelectorAll(".admin-link").forEach(function (link) {
+                link.addEventListener("click", closeSidebar);
+            });
+        }
+
+        // Close on Escape
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "Escape") closeSidebar();
         });
     });
 })();

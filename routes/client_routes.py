@@ -9,6 +9,7 @@ from sqlalchemy import func
 from extensions import db
 from models.user import User
 from models.client import ClientProfile
+from models.student import StudentProfile
 from models.project import Project, ProjectSkill, Hire
 from models.skill import Skill
 from models.category import Category
@@ -295,6 +296,97 @@ def hired_students():
     client = get_client()
     hires = Hire.query.filter_by(client_id=client.id).order_by(Hire.hired_at.desc()).all()
     return render_template("client/hired_students.html", hires=hires)
+
+
+@client_bp.route("/hire-student/<int:student_id>", methods=["GET", "POST"])
+@login_required
+def hire_student(student_id):
+    """Hire a student directly: pick a project, set amount, create Hire + Payment."""
+    if not current_user.is_client:
+        flash("Only clients can hire students. Please register as a client.", "warning")
+        return redirect(url_for("auth.register_client", next=url_for("client.hire_student", student_id=student_id)))
+
+    client = get_client()
+    student = StudentProfile.query.get_or_404(student_id)
+    if student.user_id == current_user.id:
+        flash("You cannot hire yourself.", "warning")
+        return redirect(url_for("projects.student_public", student_id=student.id))
+
+    projects = client.projects.filter(Project.status.in_(["open", "in_progress"])).order_by(
+        Project.created_at.desc()
+    ).all()
+
+    if request.method == "POST":
+        project_id = request.form.get("project_id", type=int)
+        new_title = request.form.get("new_project_title", "").strip()
+        new_desc = request.form.get("new_project_description", "").strip()
+        amount = request.form.get("amount", type=float) or 0
+        status = request.form.get("status", "active")
+
+        errors = []
+        # Allow creating a new project inline if no existing project selected
+        if not project_id and new_title:
+            project = Project(
+                title=new_title,
+                description=new_desc,
+                budget=amount or 0,
+                client_id=client.id,
+                status="in_progress",
+            )
+            db.session.add(project)
+            db.session.flush()
+        elif project_id:
+            project = Project.query.filter_by(id=project_id, client_id=client.id).first_or_404()
+        else:
+            errors.append("Please select a project or enter a new project title.")
+
+        if amount <= 0:
+            errors.append("Please enter a valid amount greater than 0.")
+        if errors:
+            for e in errors:
+                flash(e, "danger")
+            return render_template(
+                "client/hire_student.html", student=student, projects=projects
+            )
+        existing = Hire.query.filter_by(project_id=project.id, student_id=student.id).first()
+        if existing:
+            flash(f"{student.user.name} is already hired for '{project.title}'.", "warning")
+            return redirect(url_for("client.hired_students"))
+
+        project.status = "in_progress"
+        hire = Hire(
+            project_id=project.id,
+            student_id=student.id,
+            client_id=client.id,
+            status=status,
+        )
+        db.session.add(hire)
+        db.session.flush()
+
+        fee = round(float(amount) * 0.10, 2)
+        payment = Payment(
+            project_id=project.id,
+            client_id=client.id,
+            student_id=student.id,
+            amount=amount,
+            platform_fee=fee,
+            student_amount=round(float(amount) - fee, 2),
+            status="pending",
+            payment_method="Platform Balance",
+        )
+        db.session.add(payment)
+        notify(
+            student.user_id,
+            "You Were Hired!",
+            f"Congratulations! {client.company_name or current_user.name} hired you for '{project.title}'.",
+            "hire",
+            url_for("projects.workspace", project_id=project.id),
+        )
+        db.session.commit()
+        flash(f"{student.user.name} hired for '{project.title}'.", "success")
+        return redirect(url_for("client.hired_students"))
+
+    return render_template("client/hire_student.html", student=student, projects=projects)
 
 
 @client_bp.route("/payments")

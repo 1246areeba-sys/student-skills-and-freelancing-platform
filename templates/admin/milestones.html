@@ -2,6 +2,10 @@
 {% set title = 'Milestones' %}
 {% block admin_content %}
 <div class="panel">
+    <div class="panel-head">
+        <h3>Milestones</h3>
+        <a href="{{ url_for('admin.add_milestone') }}" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Add Milestone</a>
+    </div>
     <table class="admin-table">
         <thead><tr><th>Project</th><th>Title</th><th>Amount</th><th>Status</th><th>Payment</th><th>Deadline</th><th>Actions</th></tr></thead>
         <tbody>

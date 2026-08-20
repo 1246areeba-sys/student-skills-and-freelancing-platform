@@ -1,12 +1,14 @@
 from datetime import datetime
-"""SkillBridge — Student Skills Freelancing Platform.
+
+"""SkillBridge - Student Skills Freelancing Platform.
 
 Application factory. Creates the Flask app, binds extensions, registers
 blueprints, Jinja context processors and error handlers.
 """
 import os
+import sys
 import uuid
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session, redirect, url_for
 from werkzeug.exceptions import HTTPException
 
 from config import Config
@@ -23,17 +25,24 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     login_manager.init_app(app)
 
+    @login_manager.user_loader
+    def load_user(user_id):
+        from models.user import User
+        try:
+            return User.query.get(int(user_id))
+        except (ValueError, TypeError):
+            return None
+
     # Register Jinja helpers
     utils.register_template_filters(app)
     app.jinja_env.globals.update(
-        platform_name=app.config["PLATFORM_NAME"],
         platform_tagline=app.config["PLATFORM_TAGLINE"],
         platform_fee=app.config["PLATFORM_FEE_PERCENT"],
         now=datetime.utcnow,
     )
 
     # Ensure upload folders exist
-    for sub in ["profiles", "portfolio", "certificates", "general", "messages", "banners"]:
+    for sub in ["profiles", "portfolio", "certificates", "general", "messages", "banners", "logos"]:
         folder = os.path.join(app.config["UPLOAD_FOLDER"], sub)
         os.makedirs(folder, exist_ok=True)
 
@@ -64,6 +73,32 @@ def create_app(config_class=Config):
     app.register_blueprint(assessment_bp)
     app.register_blueprint(admin_bp)
 
+    # ---- Ensure database tables exist (self-healing for fresh deploys) ----
+    # This runs at import time (app = create_app() at module level). If it were
+    # to raise, the WSGI server (gunicorn) could not import `app:app` and EVERY
+    # request would return 500. So we guard it: a transient DB problem must never
+    # take the whole application down at startup.
+    try:
+        import models  # noqa: F401  (importing registers all models on metadata)
+        with app.app_context():
+            db.create_all()
+            # Enable WAL journaling for SQLite so that the 15s notification polling
+            # (readers) can run concurrently with writes instead of hitting
+            # "database is locked". This is the single most effective fix for the
+            # intermittent 500 errors seen under concurrent load.
+            try:
+                from sqlalchemy import text
+                db.session.execute(text("PRAGMA journal_mode=WAL;"))
+                db.session.execute(text("PRAGMA busy_timeout=30000;"))
+                db.session.commit()
+            except Exception:
+                pass
+    except Exception as _db_err:
+        # Log but do NOT crash the app. The site can still serve pages; the
+        # first DB-backed request will surface the real error for diagnosis.
+        print("WARNING: database initialization failed at startup: %s" % _db_err,
+              file=sys.stderr)
+
     # ---- Global context (nav notifications + unread messages) ----
     @app.context_processor
     def inject_globals():
@@ -71,16 +106,23 @@ def create_app(config_class=Config):
         from models.notification import Notification
         from models.message import Message
         from models.banner import Banner
+        from models.site_setting import SiteSetting
 
         unread_notifications = 0
         unread_messages = 0
         if current_user.is_authenticated:
-            unread_notifications = Notification.query.filter_by(
-                user_id=current_user.id, is_read=False
-            ).count()
-            unread_messages = Message.query.filter_by(
-                receiver_id=current_user.id, is_read=False
-            ).count()
+            try:
+                unread_notifications = Notification.query.filter_by(
+                    user_id=current_user.id, is_read=False
+                ).count()
+                unread_messages = Message.query.filter_by(
+                    receiver_id=current_user.id, is_read=False
+                ).count()
+            except Exception:
+                # Never let a transient DB hiccup (e.g. "database is locked")
+                # crash every page render. Degrade gracefully to zero badges.
+                unread_notifications = 0
+                unread_messages = 0
         visible_banners = []
         try:
             visible_banners = [
@@ -89,10 +131,24 @@ def create_app(config_class=Config):
             ]
         except Exception:
             visible_banners = []
+        site_logo = ""
+        try:
+            site_logo = SiteSetting.get("logo", "")
+        except Exception:
+            site_logo = ""
+        # Website name is editable from the admin panel; fall back to the
+        # configured default if no custom name has been set yet.
+        platform_name = app.config["PLATFORM_NAME"]
+        try:
+            platform_name = SiteSetting.get("site_name", app.config["PLATFORM_NAME"])
+        except Exception:
+            platform_name = app.config["PLATFORM_NAME"]
         return {
             "unread_notifications": unread_notifications,
             "unread_messages": unread_messages,
             "site_banners": visible_banners,
+            "site_logo": site_logo,
+            "platform_name": platform_name,
         }
 
     # ---- CSRF token helpers for non-WTF forms ----
@@ -116,15 +172,40 @@ def create_app(config_class=Config):
 
     @app.errorhandler(500)
     def server_error(e):
+        # Always log the real exception so the root cause is diagnosable in the
+        # server output instead of being swallowed by the generic error page.
+        import traceback
+        app.logger.error("500 error: %s\n%s", e, traceback.format_exc())
+        # When debug is enabled (e.g. on a staging deploy) also surface the real
+        # error in the browser so it can be diagnosed quickly.
+        if app.config.get("DEBUG"):
+            tb = traceback.format_exc()
+            return (
+                f"<pre style='padding:20px;white-space:pre-wrap;'>{tb}</pre>",
+                500,
+            )
         return render_template("errors/500.html"), 500
+
+    @app.errorhandler(405)
+    def method_not_allowed(e):
+        # A GET (e.g. a page refresh, a link, or a browser prefetch) hitting a
+        # POST-only endpoint should not show a misleading 500 page. Redirect
+        # back to the previous page (or home) so the user can retry safely.
+        if request.referrer and request.referrer.startswith(request.host_url):
+            return redirect(request.referrer)
+        return redirect(url_for("home.index"))
 
     @app.errorhandler(HTTPException)
     def http_error(e):
+        # Only render the dedicated error pages for the statuses we actually
+        # have templates for. Everything else (including 405, handled above,
+        # and other 4xx) falls back to Flask's default behaviour instead of
+        # being misreported as a server (500) error.
         if e.code == 403:
             return render_template("errors/403.html"), 403
         if e.code == 404:
             return render_template("errors/404.html"), 404
-        return render_template("errors/500.html"), 500
+        return e
 
     # ---- CLI commands ----
     @app.cli.command("seed")

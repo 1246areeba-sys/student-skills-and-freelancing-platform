@@ -1,0 +1,522 @@
+/* ============================================================
+   SkillBridge — Home Page (full-width layout)
+   ============================================================ */
+
+/* Make the home page span the entire viewport width */
+body.home-page .container {
+    max-width: 100%;
+    padding: 0 40px;
+}
+
+/* ---------- Large hero banner on the home page ---------- */
+/* Banner is big and full-width, but the rest of the site stays usable. */
+body.home-page .site-banner {
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 0;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(15, 23, 42, 0.3);
+}
+
+body.home-page .site-banner-inner {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 1.5rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+body.home-page .site-banner-text {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.4rem;
+    font-size: 2.4rem;
+    line-height: 1.4;
+}
+
+body.home-page .site-banner-text strong {
+    font-size: 5rem;
+    line-height: 1.05;
+}
+
+body.home-page .site-banner-text span {
+    font-size: 2.2rem;
+    opacity: 0.95;
+}
+
+body.home-page .site-banner-btn {
+    margin-top: 0.8rem;
+    padding: 1.4rem 3rem;
+    font-size: 1.7rem;
+    border-radius: 999px;
+}
+
+body.home-page .site-banner-img {
+    width: 480px;
+    height: 270px;
+    border-radius: 18px;
+    margin-bottom: 0.8rem;
+}
+
+@media (max-width: 768px) {
+    body.home-page .site-banner {
+        min-height: 70vh;
+        padding: 3rem 0;
+    }
+
+    body.home-page .site-banner-text strong {
+        font-size: 2.2rem;
+    }
+
+    body.home-page .site-banner-text {
+        font-size: 1.3rem;
+    }
+
+    body.home-page .site-banner-text span {
+        font-size: 1.2rem;
+    }
+
+    body.home-page .site-banner-img {
+        width: 240px;
+        height: 140px;
+    }
+}
+
+@media (max-width: 768px) {
+    body.home-page .container {
+        padding: 0 18px;
+    }
+}
+
+/* ---------- Hero ---------- */
+.hero {
+    background: linear-gradient(135deg, var(--royal) 0%, var(--royal-dark) 100%);
+    color: #fff;
+    padding: 80px 0 90px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::after {
+    content: "";
+    position: absolute;
+    right: -120px;
+    top: -120px;
+    width: 420px;
+    height: 420px;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.18) 0%, rgba(245, 158, 11, 0) 70%);
+    pointer-events: none;
+}
+
+.hero-inner {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 50px;
+    align-items: center;
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--gold);
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    padding: 7px 16px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 22px;
+}
+
+.hero-text h1 {
+    color: #fff;
+    font-size: 3rem;
+    line-height: 1.15;
+    margin-bottom: 18px;
+}
+
+.hero-text .text-gold {
+    color: var(--gold);
+}
+
+.hero-sub {
+    font-size: 1.1rem;
+    color: #cbd5e1;
+    max-width: 560px;
+    margin-bottom: 28px;
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 2;
+}
+
+.hero-actions .btn {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-search .search-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 8px 8px 8px 16px;
+    box-shadow: var(--shadow);
+    max-width: 560px;
+}
+
+.hero-search .search-bar i {
+    color: var(--muted);
+}
+
+.hero-search .search-bar input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: transparent;
+    color: var(--ink);
+}
+
+.hero-image img {
+    width: 100%;
+    border-radius: 18px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+/* ---------- Generic sections ---------- */
+.section {
+    padding: 70px 0;
+}
+
+.section-alt {
+    background: #fff;
+}
+
+.section-head {
+    margin-bottom: 40px;
+}
+
+.section-head h2 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.section-head p {
+    color: var(--muted);
+    font-size: 1.05rem;
+}
+
+/* ---------- Skill grid ---------- */
+.skill-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 18px;
+}
+
+.skill-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    font-weight: 600;
+    color: var(--royal);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+}
+
+.skill-card i {
+    color: var(--gold);
+    font-size: 1.1rem;
+}
+
+.skill-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--royal);
+    color: var(--royal-light);
+    box-shadow: var(--shadow);
+}
+
+/* ---------- Card grids (students / projects / testimonials) ---------- */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 22px;
+}
+
+.student-card,
+.project-card,
+.testimonial-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 22px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.student-card:hover,
+.project-card:hover,
+.testimonial-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow);
+}
+
+.student-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--gold);
+    margin-bottom: 12px;
+}
+
+.student-card h4,
+.project-card h4 {
+    color: var(--navy);
+    margin-bottom: 6px;
+}
+
+.student-uni {
+    color: var(--muted);
+    font-size: 0.88rem;
+    margin-bottom: 6px;
+}
+
+.skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 10px 0;
+}
+
+.skill-tags .tag {
+    background: #eef2ff;
+    color: var(--royal);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.student-meta {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    margin: 8px 0 14px;
+    color: var(--ink);
+}
+
+.student-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.student-actions .btn {
+    flex: 1;
+}
+
+.project-top {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.project-cat {
+    color: var(--muted);
+    font-size: 0.88rem;
+    margin-bottom: 8px;
+}
+
+.project-meta {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    margin: 14px 0;
+    color: var(--ink);
+}
+
+.project-card .btn {
+    margin-top: auto;
+}
+
+.empty-text {
+    color: var(--muted);
+    text-align: center;
+    width: 100%;
+    padding: 30px 0;
+}
+
+/* ---------- How it works ---------- */
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 24px;
+}
+
+.step-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 30px 24px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+}
+
+.step-num {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--royal);
+    color: #fff;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 1.2rem;
+}
+
+.step-card i {
+    font-size: 1.8rem;
+    color: var(--gold);
+    margin-bottom: 12px;
+}
+
+.step-card h4 {
+    margin-bottom: 8px;
+}
+
+.step-card p {
+    color: var(--muted);
+    font-size: 0.92rem;
+}
+
+/* ---------- Statistics ---------- */
+.stats-section {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--royal-dark) 100%);
+    color: #fff;
+    padding: 60px 0;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 30px;
+    text-align: center;
+}
+
+.stat-item i {
+    font-size: 2rem;
+    color: var(--gold);
+    margin-bottom: 10px;
+}
+
+.stat-item h3 {
+    color: #fff;
+    font-size: 2.4rem;
+    margin-bottom: 4px;
+}
+
+.stat-item p {
+    color: #cbd5e1;
+    font-size: 0.95rem;
+}
+
+/* ---------- Testimonials ---------- */
+.testimonial-card .stars {
+    color: #cbd5e1;
+    margin-bottom: 12px;
+}
+
+.testimonial-card .stars i.filled {
+    color: var(--gold);
+}
+
+.testimonial-card p {
+    font-style: italic;
+    color: var(--ink);
+    margin-bottom: 16px;
+    flex: 1;
+}
+
+.testimonial-author strong {
+    color: var(--navy);
+}
+
+.testimonial-author span {
+    display: block;
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+/* ---------- CTA ---------- */
+.cta-section {
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+    color: var(--navy);
+    padding: 70px 0;
+}
+
+.cta-section h2 {
+    color: var(--navy);
+    font-size: 2.2rem;
+    margin-bottom: 12px;
+}
+
+.cta-section p {
+    font-size: 1.1rem;
+    margin-bottom: 26px;
+}
+
+.cta-actions {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+    .hero-inner {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .hero-text h1 {
+        font-size: 2.3rem;
+    }
+
+    .hero-image {
+        order: -1;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-text h1 {
+        font-size: 1.9rem;
+    }
+
+    .section-head h2 {
+        font-size: 1.6rem;
+    }
+}

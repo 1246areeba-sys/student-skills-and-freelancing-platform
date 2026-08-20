@@ -10,6 +10,7 @@
                 <p>Log in to your {{ platform_name }} account.</p>
             </div>
             <form method="post" class="auth-form">
+                <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
                 <div class="form-group">
                     <label>Email</label>
                     <div class="input-icon">

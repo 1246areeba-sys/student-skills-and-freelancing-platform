@@ -1,0 +1,25 @@
+{% extends "admin/base.html" %}
+{% set title = 'Website Name' %}
+{% block admin_content %}
+<div class="panel">
+    <h2 class="panel-title">Website Name</h2>
+    <p class="muted">Set the name that appears across the whole site (navbar, sidebar, footer, page titles and emails).</p>
+
+    <div class="logo-preview-box">
+        <span class="muted small">Current website name:</span>
+        <span class="brand-name-lg">{{ current_name }}</span>
+    </div>
+
+    <form method="post" action="{{ url_for('admin.site_name') }}" class="admin-form">
+        <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+        <div class="form-group">
+            <label>New Website Name</label>
+            <input type="text" name="site_name" class="form-control" value="{{ current_name }}" maxlength="80" required>
+            <span class="muted small">Up to 80 characters.</span>
+        </div>
+        <div class="form-actions">
+            <button class="btn btn-primary">Save Name</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

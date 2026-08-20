@@ -95,6 +95,13 @@
     font-size: 0.85rem;
 }
 
+.project-card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+}
+
 /* Student cards */
 .student-card {
     background: #fff;

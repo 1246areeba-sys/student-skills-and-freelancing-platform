@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% block title %}SkillBridge — Turn Your Skills Into Real Opportunities{% endblock %}
+{% block body_class %}home-page{% endblock %}
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
 {% endblock %}
 {% block content %}
 <!-- Hero -->
@@ -12,9 +14,19 @@
             <h1>Turn Your Skills Into <span class="text-gold">Real Opportunities</span></h1>
             <p class="hero-sub">Connect talented students with real-world freelance projects, build your portfolio, gain experience, and earn while you learn.</p>
             <div class="hero-actions">
-                <a href="{{ url_for('projects.projects') }}" class="btn btn-gold btn-lg">Find Projects</a>
-                <a href="{{ url_for('auth.register_client') }}" class="btn btn-outline-light btn-lg">Hire a Student</a>
-                <a href="{{ url_for('auth.register_student') }}" class="btn btn-primary btn-lg">Create Profile</a>
+                <a href="{{ url_for('projects.projects') }}" class="btn btn-gold btn-lg" onclick="window.location.href='{{ url_for('projects.projects') }}'; return false;">Find Projects</a>
+                <a href="{{ url_for('auth.register_client') }}" class="btn btn-outline-light btn-lg" onclick="window.location.href='{{ url_for('auth.register_client') }}'; return false;">Hire a Student</a>
+                {% if current_user.is_authenticated %}
+                    {% if current_user.is_student %}
+                        <a href="{{ url_for('student.edit_profile') }}" class="btn btn-primary btn-lg" onclick="window.location.href='{{ url_for('student.edit_profile') }}'; return false;">Edit Profile</a>
+                    {% elif current_user.is_client %}
+                        <a href="{{ url_for('client.profile') }}" class="btn btn-primary btn-lg" onclick="window.location.href='{{ url_for('client.profile') }}'; return false;">My Profile</a>
+                    {% else %}
+                        <a href="{{ url_for('admin.dashboard') }}" class="btn btn-primary btn-lg" onclick="window.location.href='{{ url_for('admin.dashboard') }}'; return false;">Admin Panel</a>
+                    {% endif %}
+                {% else %}
+                    <a href="{{ url_for('auth.register_student') }}" class="btn btn-primary btn-lg" onclick="window.location.href='{{ url_for('auth.register_student') }}'; return false;">Create Profile</a>
+                {% endif %}
             </div>
             <div class="hero-search">
                 <form action="{{ url_for('home.global_search') }}" method="get" class="search-bar">
@@ -72,7 +84,13 @@
                 </div>
                 <div class="student-actions">
                     <a href="{{ url_for('projects.student_public', student_id=student.id) }}" class="btn btn-outline-primary btn-sm">View Profile</a>
-                    <a href="{{ url_for('message.chat', user_id=student.user_id) }}" class="btn btn-gold btn-sm">Hire Student</a>
+                    {% if current_user.is_authenticated and current_user.is_client %}
+                    <a href="{{ url_for('client.hire_student', student_id=student.id) }}" class="btn btn-gold btn-sm">Hire Student</a>
+                    {% elif current_user.is_authenticated %}
+                    <a href="{{ url_for('auth.register_client', next=url_for('client.hire_student', student_id=student.id)) }}" class="btn btn-gold btn-sm">Hire Student</a>
+                    {% else %}
+                    <a href="{{ url_for('auth.login', next=url_for('client.hire_student', student_id=student.id)) }}" class="btn btn-gold btn-sm">Hire Student</a>
+                    {% endif %}
                 </div>
             </div>
             {% else %}
@@ -215,8 +233,18 @@
         <h2>Ready to Build Your Future?</h2>
         <p>Join thousands of students and clients building careers and businesses together.</p>
         <div class="cta-actions">
-            <a href="{{ url_for('auth.register_student') }}" class="btn btn-gold btn-lg">Join as Student</a>
-            <a href="{{ url_for('auth.register_client') }}" class="btn btn-outline-light btn-lg">Hire Student</a>
+            {% if current_user.is_authenticated %}
+                {% if current_user.is_student %}
+                    <a href="{{ url_for('student.dashboard') }}" class="btn btn-gold btn-lg">Go to Dashboard</a>
+                {% elif current_user.is_client %}
+                    <a href="{{ url_for('client.dashboard') }}" class="btn btn-gold btn-lg">Go to Dashboard</a>
+                {% else %}
+                    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-gold btn-lg">Admin Panel</a>
+                {% endif %}
+            {% else %}
+                <a href="{{ url_for('auth.register_student') }}" class="btn btn-gold btn-lg">Join as Student</a>
+                <a href="{{ url_for('auth.register_client') }}" class="btn btn-outline-light btn-lg">Hire Student</a>
+            {% endif %}
         </div>
     </div>
 </section>

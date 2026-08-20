@@ -1,0 +1,110 @@
+{% extends "admin/base.html" %}
+{% set title = 'Add Student' %}
+{% block admin_content %}
+<div class="panel narrow-panel">
+    <div class="panel-head"><h3>Add New Student</h3></div>
+    <form method="post" action="{{ url_for('admin.add_student') }}" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+        <div class="form-row">
+            <div class="form-group">
+                <label>Full Name <span class="req">*</span></label>
+                <input type="text" name="name" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Email <span class="req">*</span></label>
+                <input type="email" name="email" class="form-control" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Password <span class="req">*</span></label>
+                <input type="password" name="password" class="form-control" minlength="8" required>
+            </div>
+            <div class="form-group">
+                <label>Confirm Password <span class="req">*</span></label>
+                <input type="password" name="confirm_password" class="form-control" minlength="8" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>University / College <span class="req">*</span></label>
+                <input type="text" name="university" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Student ID</label>
+                <input type="text" name="student_id" class="form-control">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>University Email</label>
+                <input type="email" name="university_email" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="text" name="phone" class="form-control">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Education</label>
+            <textarea name="education" class="form-control" rows="2"></textarea>
+        </div>
+        <div class="form-group">
+            <label>Bio</label>
+            <textarea name="bio" class="form-control" rows="2"></textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Experience</label>
+                <select name="experience" class="form-control">
+                    {% for opt in ['Entry Level', 'Intermediate', 'Advanced', 'Expert'] %}
+                    <option value="{{ opt }}">{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Hourly Rate ($)</label>
+                <input type="number" step="0.01" name="hourly_rate" class="form-control" value="0">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Availability</label>
+                <select name="availability" class="form-control">
+                    {% for opt in ['Full Time', 'Part Time', 'Weekends'] %}
+                    <option value="{{ opt }}">{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Languages</label>
+                <input type="text" name="languages" class="form-control" value="English">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>City</label>
+                <input type="text" name="city" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>Verification Status</label>
+                <select name="verification_status" class="form-control">
+                    {% for opt in ['pending', 'verified', 'rejected'] %}
+                    <option value="{{ opt }}">{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Skills <span class="muted small">(comma separated)</span></label>
+            <input type="text" name="skills" class="form-control" placeholder="e.g. Python, Graphic Design, Writing">
+        </div>
+        <div class="form-group">
+            <label>Profile Picture</label>
+            <input type="file" name="profile_picture" class="form-control" accept="image/*">
+        </div>
+        <button class="btn btn-primary btn-block">Create Student</button>
+        <a href="{{ url_for('admin.students') }}" class="btn btn-outline-gold btn-block">Cancel</a>
+    </form>
+</div>
+{% endblock %}

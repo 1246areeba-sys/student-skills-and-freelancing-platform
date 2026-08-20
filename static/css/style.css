@@ -205,15 +205,20 @@ h3 {
 }
 
 .brand-logo img {
-    height: 34px;
+    height: 40px;
     width: auto;
-    max-width: 160px;
+    max-width: 200px;
     object-fit: contain;
     display: block;
+    border-radius: 6px;
+    background: #fff;
+    padding: 2px 4px;
 }
 
+/* Show the uploaded logo clearly on the dark navbar instead of forcing
+   it to pure white (which made most logos invisible). */
 .brand-light .brand-logo img {
-    filter: brightness(0) invert(1);
+    filter: none;
 }
 
 .brand-light {
@@ -822,54 +827,81 @@ h3 {
 .site-banners {
     width: 100%;
 }
+
 .site-banner {
     width: 100%;
     color: #fff;
-    padding: 0.75rem 0;
+    padding: 2.5rem 0;
+    box-shadow: 0 8px 30px rgba(15, 23, 42, 0.25);
 }
+
 .site-banner-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
+    gap: 1.5rem;
     flex-wrap: wrap;
 }
+
 .site-banner-text {
     display: flex;
     align-items: baseline;
-    gap: 0.6rem;
+    gap: 0.8rem;
     flex-wrap: wrap;
-    font-size: 0.95rem;
+    font-size: 1.35rem;
+    line-height: 1.4;
 }
+
 .site-banner-text strong {
-    font-weight: 700;
+    font-weight: 800;
+    font-size: 1.6rem;
 }
+
 .site-banner-text span {
     opacity: 0.95;
 }
+
 .site-banner-btn {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    background: rgba(255, 255, 255, 0.18);
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.22);
+    border: 1px solid rgba(255, 255, 255, 0.6);
     color: #fff;
-    padding: 0.4rem 0.9rem;
+    padding: 0.7rem 1.4rem;
     border-radius: 999px;
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 1.05rem;
     text-decoration: none;
     white-space: nowrap;
-    transition: background 0.2s ease;
+    transition: background 0.2s ease, transform 0.2s ease;
 }
+
 .site-banner-btn:hover {
-    background: rgba(255, 255, 255, 0.32);
+    background: rgba(255, 255, 255, 0.38);
     color: #fff;
+    transform: translateY(-2px);
 }
-.banner-bg-gold   { background: linear-gradient(90deg, #F59E0B, #D97706); }
-.banner-bg-blue   { background: linear-gradient(90deg, #1E3A8A, #3B5BC9); }
-.banner-bg-green  { background: linear-gradient(90deg, #047857, #10B981); }
-.banner-bg-red    { background: linear-gradient(90deg, #B91C1C, #EF4444); }
-.banner-bg-dark   { background: linear-gradient(90deg, #0F172A, #1E293B); }
+
+.banner-bg-gold {
+    background: linear-gradient(90deg, #F59E0B, #D97706);
+}
+
+.banner-bg-blue {
+    background: linear-gradient(90deg, #1E3A8A, #3B5BC9);
+}
+
+.banner-bg-green {
+    background: linear-gradient(90deg, #047857, #10B981);
+}
+
+.banner-bg-red {
+    background: linear-gradient(90deg, #B91C1C, #EF4444);
+}
+
+.banner-bg-dark {
+    background: linear-gradient(90deg, #0F172A, #1E293B);
+}
 
 /* Banner chips used in the admin table */
 .banner-chip {
@@ -880,11 +912,26 @@ h3 {
     font-size: 0.75rem;
     text-transform: capitalize;
 }
-.banner-chip.banner-bg-gold  { background: #D97706; }
-.banner-chip.banner-bg-blue  { background: #1E3A8A; }
-.banner-chip.banner-bg-green { background: #047857; }
-.banner-chip.banner-bg-red   { background: #B91C1C; }
-.banner-chip.banner-bg-dark  { background: #0F172A; }
+
+.banner-chip.banner-bg-gold {
+    background: #D97706;
+}
+
+.banner-chip.banner-bg-blue {
+    background: #1E3A8A;
+}
+
+.banner-chip.banner-bg-green {
+    background: #047857;
+}
+
+.banner-chip.banner-bg-red {
+    background: #B91C1C;
+}
+
+.banner-chip.banner-bg-dark {
+    background: #0F172A;
+}
 
 /* Admin banner create form layout */
 .banner-create .banner-fields {
@@ -894,15 +941,18 @@ h3 {
     align-items: center;
     margin-bottom: 0.6rem;
 }
+
 .banner-create .banner-fields .form-control {
     flex: 1 1 160px;
 }
+
 .banner-create .checkbox-inline {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
     white-space: nowrap;
 }
+
 /* Banner image thumbnails / previews */
 .banner-thumb {
     width: 90px;
@@ -911,6 +961,7 @@ h3 {
     border-radius: 6px;
     display: block;
 }
+
 .banner-preview img {
     max-width: 100%;
     max-height: 160px;
@@ -918,17 +969,73 @@ h3 {
     border: 1px solid var(--line);
     display: block;
 }
+
 .banner-image-row {
     margin: 0.5rem 0;
 }
+
 .site-banner-img {
-    width: 120px;
-    height: 64px;
+    width: 220px;
+    height: 120px;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: 12px;
     flex-shrink: 0;
-}
-@media (max-width: 600px) {
-    .site-banner-img { display: none; }
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 }
 
+@media (max-width: 600px) {
+    .site-banner-img {
+        display: none;
+    }
+}
+
+
+/* Live notification toasts */
+.toast-container {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 340px;
+}
+
+.toast-notification {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: #fff;
+    border-left: 4px solid var(--gold);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.18);
+    padding: 14px 16px;
+    text-decoration: none;
+    color: var(--ink);
+    transform: translateX(120%);
+    opacity: 0;
+    transition: transform 0.35s ease, opacity 0.35s ease;
+}
+
+.toast-notification.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.toast-notification i {
+    color: var(--royal);
+    font-size: 1.1rem;
+    margin-top: 2px;
+}
+
+.toast-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 0.88rem;
+}
+
+.toast-body span {
+    color: var(--muted);
+}

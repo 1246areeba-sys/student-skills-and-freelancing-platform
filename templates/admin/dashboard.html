@@ -1,6 +1,14 @@
 {% extends "admin/base.html" %}
 {% set title = 'Dashboard' %}
 {% block admin_content %}
+<div class="admin-welcome">
+    <div>
+        <h2>Welcome back, {{ current_user.name.split(' ')[0] }}! 👋</h2>
+        <p>Here's an overview of your platform's activity and performance.</p>
+    </div>
+    <a href="{{ url_for('admin.reports') }}" class="btn btn-gold">View Reports</a>
+</div>
+
 <div class="stat-grid">
     <div class="stat-card">
         <div class="stat-icon"><i class="fa-solid fa-user-graduate"></i></div>

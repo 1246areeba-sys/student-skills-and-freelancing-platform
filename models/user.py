@@ -31,13 +31,23 @@ class User(UserMixin, db.Model):
         "Notification", back_populates="user", cascade="all, delete-orphan", lazy="dynamic"
     )
     sent_messages = db.relationship(
-        "Message", foreign_keys="Message.sender_id", back_populates="sender", lazy="dynamic"
+        "Message", foreign_keys="Message.sender_id", back_populates="sender",
+        cascade="all, delete-orphan", lazy="dynamic"
     )
     received_messages = db.relationship(
-        "Message", foreign_keys="Message.receiver_id", back_populates="receiver", lazy="dynamic"
+        "Message", foreign_keys="Message.receiver_id", back_populates="receiver",
+        cascade="all, delete-orphan", lazy="dynamic"
     )
     wishlist_items = db.relationship(
         "Wishlist", back_populates="user", cascade="all, delete-orphan", lazy="dynamic"
+    )
+    reviews_given = db.relationship(
+        "Review", foreign_keys="Review.reviewer_id", back_populates="reviewer",
+        cascade="all, delete-orphan", lazy="dynamic"
+    )
+    reviews_received = db.relationship(
+        "Review", foreign_keys="Review.reviewed_user_id", back_populates="reviewed_user",
+        cascade="all, delete-orphan", lazy="dynamic"
     )
 
     # --- Password helpers ---
@@ -61,20 +71,8 @@ class User(UserMixin, db.Model):
         return self.role == "admin"
 
     @property
-    def is_active_user(self):
-        return self.status == "active"
-
-    # --- Convenience accessors ---
-    @property
     def display_picture(self):
-        if self.profile_picture:
-            return self.profile_picture
-        return "images/default-avatar.png"
+        return self.profile_picture or "images/default-avatar.png"
 
     def __repr__(self):
         return f"<User {self.id} {self.email} ({self.role})>"
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return db.session.get(User, int(user_id))

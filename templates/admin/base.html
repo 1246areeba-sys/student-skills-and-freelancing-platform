@@ -1,14 +1,16 @@
 {% extends "base.html" %}
+{% block body_class %}is-admin{% endblock %}
 {% block title %}{{ title|default('Admin') }} — {{ platform_name }}{% endblock %}
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
 {% endblock %}
 {% block content %}
 <div class="admin-layout">
+    <div class="admin-sidebar-backdrop" id="adminSidebarBackdrop"></div>
     <aside class="admin-sidebar">
         <div class="admin-brand">
             <a href="{{ url_for('admin.dashboard') }}" class="brand brand-light">
-                <span class="brand-logo"><img src="{{ url_for('static', filename='logo.webp') }}" alt="SkillBridge logo"></span>
+                <span class="brand-logo"><img src="{{ url_for('static', filename=site_logo) if site_logo else url_for('static', filename='logo.webp') }}" alt="SkillBridge logo"></span>
                 <span class="brand-name">Admin</span>
             </a>
         </div>
@@ -29,6 +31,8 @@
             <a href="{{ url_for('admin.withdrawals') }}" class="admin-link {% if request.endpoint == 'admin.withdrawals' %}active{% endif %}"><i class="fa-solid fa-money-bill-transfer"></i> Withdrawals</a>
             <a href="{{ url_for('admin.notifications') }}" class="admin-link {% if request.endpoint == 'admin.notifications' %}active{% endif %}"><i class="fa-solid fa-bullhorn"></i> Notify</a>
             <a href="{{ url_for('admin.banners') }}" class="admin-link {% if request.endpoint == 'admin.banners' %}active{% endif %}"><i class="fa-solid fa-rectangle-ad"></i> Banners</a>
+            <a href="{{ url_for('admin.site_logo') }}" class="admin-link {% if request.endpoint == 'admin.site_logo' %}active{% endif %}"><i class="fa-solid fa-image"></i> Logo</a>
+            <a href="{{ url_for('admin.site_name') }}" class="admin-link {% if request.endpoint == 'admin.site_name' %}active{% endif %}"><i class="fa-solid fa-signature"></i> Site Name</a>
             <a href="{{ url_for('admin.messages') }}" class="admin-link {% if request.endpoint == 'admin.messages' %}active{% endif %}"><i class="fa-solid fa-comments"></i> Messages</a>
             <a href="{{ url_for('admin.milestones') }}" class="admin-link {% if request.endpoint == 'admin.milestones' %}active{% endif %}"><i class="fa-solid fa-flag-checkered"></i> Milestones</a>
             <a href="{{ url_for('admin.reports') }}" class="admin-link {% if request.endpoint == 'admin.reports' %}active{% endif %}"><i class="fa-solid fa-chart-line"></i> Reports</a>
@@ -38,9 +42,12 @@
         </div>
     </aside>
 
-    <main class="admin-main">
+    <div class="admin-main">
         <header class="admin-topbar">
-            <h1 class="admin-page-title">{{ title|default('Admin Panel') }}</h1>
+            <div class="admin-topbar-left">
+                <button type="button" class="admin-sidebar-toggle" id="adminSidebarToggle" aria-label="Toggle admin menu"><i class="fa-solid fa-bars"></i></button>
+                <h1 class="admin-page-title">{{ title|default('Admin Panel') }}</h1>
+            </div>
             <div class="admin-user">
                 <span class="muted small">{{ current_user.name }}</span>
                 <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-right-from-bracket"></i></a>
@@ -49,6 +56,9 @@
         <div class="admin-content">
             {% block admin_content %}{% endblock %}
         </div>
-    </main>
+    </div>
 </div>
+{% endblock %}
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
 {% endblock %}

@@ -1,0 +1,67 @@
+{% extends "dashboard_base.html" %}
+{% block title %}Hire {{ student.user.name }} — {{ platform_name }}{% endblock %}
+{% block page_title %}Hire Student{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('client.dashboard') }}" class="sidebar-link"><i class="fa-solid fa-gauge-high"></i> Dashboard</a>
+<a href="{{ url_for('client.profile') }}" class="sidebar-link"><i class="fa-solid fa-user"></i> My Profile</a>
+<a href="{{ url_for('client.post_project') }}" class="sidebar-link"><i class="fa-solid fa-plus"></i> Post Project</a>
+<a href="{{ url_for('client.my_projects') }}" class="sidebar-link"><i class="fa-solid fa-briefcase"></i> My Projects</a>
+<a href="{{ url_for('client.hired_students') }}" class="sidebar-link active"><i class="fa-solid fa-handshake"></i> Hired Students</a>
+{% endblock %}
+{% block content %}
+<div class="panel narrow-panel">
+    <div class="panel-head"><h3>Hire <span class="text-gold">{{ student.user.name }}</span></h3></div>
+    <div class="profile-header" style="margin-bottom:18px;">
+        <img src="{{ url_for('static', filename=student.user.display_picture) }}" class="avatar-lg" onerror="this.src='{{ url_for('static', filename='images/default-avatar.png') }}'">
+        <div>
+            <strong>{{ student.user.name }}</strong>
+            <p class="muted small">{{ student.university or 'Independent Student' }} &middot; {{ student.experience }}</p>
+            <p class="muted small">Hourly Rate: <strong class="text-gold">${{ student.hourly_rate }}/hr</strong></p>
+        </div>
+    </div>
+
+    {% if not projects %}
+    <div class="alert alert-info">
+        You don't have any projects yet. Create one below to hire <strong>{{ student.user.name }}</strong> right away.
+    </div>
+    {% endif %}
+    <form method="post" class="form-card">
+        <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+        <div class="form-group">
+            <label>Select Project *</label>
+            <select name="project_id" class="form-control" {% if not projects %}disabled{% endif %} required>
+                <option value="">-- Choose a project --</option>
+                {% for p in projects %}
+                <option value="{{ p.id }}">{{ p.title }} ({{ p.status }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="or-divider"><span>OR create a new project</span></div>
+        <div class="form-group">
+            <label>New Project Title</label>
+            <input type="text" name="new_project_title" class="form-control" placeholder="e.g. Build a portfolio website">
+        </div>
+        <div class="form-group">
+            <label>New Project Description</label>
+            <textarea name="new_project_description" class="form-control" rows="3" placeholder="Describe the work..."></textarea>
+        </div>
+        <div class="form-group">
+            <label>Contract Amount ($) *</label>
+            <input type="number" step="0.01" min="0.01" name="amount" class="form-control" placeholder="e.g. 500" required>
+            <small class="muted">A 10% platform fee will be applied automatically.</small>
+        </div>
+        <div class="form-group">
+            <label>Status</label>
+            <select name="status" class="form-control">
+                <option value="active" selected>Active</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-gold"><i class="fa-solid fa-handshake"></i> Confirm Hire</button>
+            <a href="{{ url_for('projects.student_public', student_id=student.id) }}" class="btn btn-outline-primary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

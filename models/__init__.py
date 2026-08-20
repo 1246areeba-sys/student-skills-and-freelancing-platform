@@ -20,6 +20,7 @@ from models.certificate import Certificate
 from models.assessment import Assessment, AssessmentQuestion, AssessmentResult
 from models.wishlist import Wishlist
 from models.banner import Banner
+from models.site_setting import SiteSetting
 
 __all__ = [
     "User",
@@ -45,4 +46,5 @@ __all__ = [
     "AssessmentResult",
     "Wishlist",
     "Banner",
+    "SiteSetting",
 ]

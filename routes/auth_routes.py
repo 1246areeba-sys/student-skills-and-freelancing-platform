@@ -143,6 +143,8 @@ def register_client():
     if current_user.is_authenticated:
         return redirect(url_for("home.index"))
 
+    next_page = request.args.get("next") or request.form.get("next")
+
     if request.method == "POST":
         name = request.form.get("name", "").strip()
         email = request.form.get("email", "").strip().lower()
@@ -197,9 +199,9 @@ def register_client():
         db.session.commit()
         login_user(user)
         flash("Account created successfully! Welcome to SkillBridge.", "success")
-        return redirect(url_for("client.dashboard"))
+        return redirect(next_page or url_for("client.dashboard"))
 
-    return render_template("auth/register_client.html")
+    return render_template("auth/register_client.html", next=next_page)
 
 
 @auth_bp.route("/logout")

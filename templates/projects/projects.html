@@ -98,7 +98,14 @@
                         <span class="muted small"><i class="fa-solid fa-user-tie"></i> {{ project.client.company_name or project.client.user.name }}</span>
                         <span class="muted small"><i class="fa-solid fa-paper-plane"></i> {{ project.proposal_count }} proposals</span>
                     </div>
-                    <a href="{{ url_for('projects.detail', project_id=project.id) }}" class="btn btn-primary btn-sm btn-block">View Details</a>
+                    <div class="project-card-actions">
+                        <a href="{{ url_for('projects.detail', project_id=project.id) }}" class="btn btn-primary btn-sm btn-block">View Details</a>
+                        {% if current_user.is_authenticated and (current_user.is_student or current_user.is_admin) and project.is_open %}
+                        <a href="{{ url_for('proposal.apply', project_id=project.id) }}" class="btn btn-gold btn-sm btn-block"><i class="fa-solid fa-paper-plane"></i> Submit Proposal</a>
+                        {% elif not current_user.is_authenticated %}
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-gold btn-sm btn-block"><i class="fa-solid fa-paper-plane"></i> Apply</a>
+                        {% endif %}
+                    </div>
                 </div>
                 {% endfor %}
             </div>

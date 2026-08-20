@@ -1,0 +1,41 @@
+{% extends "admin/base.html" %}
+{% set title = 'Edit Notification' %}
+{% block admin_content %}
+<div class="panel narrow-panel">
+    <div class="panel-head"><h3>Edit Notification</h3></div>
+    <form method="post" action="{{ url_for('admin.edit_notification', notification_id=notification.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+        <div class="form-group">
+            <label>User *</label>
+            <select name="user_id" class="form-control" required>
+                {% for u in users %}
+                <option value="{{ u.id }}" {% if u.id == notification.user_id %}selected{% endif %}>{{ u.name }} ({{ u.role }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Title *</label>
+            <input type="text" name="title" class="form-control" value="{{ notification.title }}" required>
+        </div>
+        <div class="form-group">
+            <label>Message</label>
+            <textarea name="message" class="form-control" rows="4">{{ notification.message or '' }}</textarea>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Type</label>
+                <input type="text" name="notification_type" class="form-control" value="{{ notification.notification_type }}">
+            </div>
+            <div class="form-group">
+                <label>Link</label>
+                <input type="text" name="link" class="form-control" value="{{ notification.link or '' }}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="checkbox-inline"><input type="checkbox" name="is_read" {% if notification.is_read %}checked{% endif %}> Mark as read</label>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+        <a href="{{ url_for('admin.notifications') }}" class="btn btn-outline-gold btn-block">Cancel</a>
+    </form>
+</div>
+{% endblock %}

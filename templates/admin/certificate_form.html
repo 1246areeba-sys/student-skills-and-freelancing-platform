@@ -1,0 +1,46 @@
+{% extends "admin/base.html" %}
+{% set title = 'Certificate' %}
+{% block admin_content %}
+<div class="panel narrow-panel">
+    <div class="panel-head"><h3>{% if cert %}Edit Certificate{% else %}Add Certificate{% endif %}</h3></div>
+    <form method="post" action="{% if cert %}{{ url_for('admin.edit_certificate', cert_id=cert.id) }}{% else %}{{ url_for('admin.add_certificate') }}{% endif %}">
+        <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+        <div class="form-group">
+            <label>Student *</label>
+            <select name="student_id" class="form-control" required>
+                <option value="">— Select Student —</option>
+                {% for s in students %}
+                <option value="{{ s.id }}" {% if cert and s.id == cert.student_id %}selected{% endif %}>{{ s.user.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Title *</label>
+            <input type="text" name="title" class="form-control" value="{{ cert.title if cert else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label>Organization</label>
+            <input type="text" name="organization" class="form-control" value="{{ cert.organization if cert else '' }}">
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Issue Date</label>
+                <input type="date" name="issue_date" class="form-control" value="{{ cert.issue_date.isoformat() if cert and cert.issue_date else '' }}">
+            </div>
+            <div class="form-group">
+                <label>Credential ID</label>
+                <input type="text" name="credential_id" class="form-control" value="{{ cert.credential_id if cert else '' }}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Verification URL</label>
+            <input type="text" name="verification_url" class="form-control" value="{{ cert.verification_url if cert else '' }}">
+        </div>
+        <div class="form-group">
+            <label class="checkbox-inline"><input type="checkbox" name="verified" {% if cert and cert.verified %}checked{% endif %}> Verified</label>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Save</button>
+        <a href="{{ url_for('admin.certificates') }}" class="btn btn-outline-gold btn-block">Cancel</a>
+    </form>
+</div>
+{% endblock %}

@@ -5,6 +5,7 @@ from flask_login import login_required, current_user
 from extensions import db
 from models.project import Project
 from models.proposal import Proposal
+from models.student import StudentProfile
 from utils import notify
 
 proposal_bp = Blueprint("proposal", __name__, url_prefix="/proposals")
@@ -13,7 +14,7 @@ proposal_bp = Blueprint("proposal", __name__, url_prefix="/proposals")
 @proposal_bp.route("/projects/<int:project_id>/apply", methods=["GET", "POST"])
 @login_required
 def apply(project_id):
-    if not current_user.is_student:
+    if not (current_user.is_student or current_user.is_admin):
         flash("Only students can apply to projects.", "warning")
         return redirect(url_for("projects.detail", project_id=project_id))
 
@@ -23,6 +24,10 @@ def apply(project_id):
         return redirect(url_for("projects.detail", project_id=project_id))
 
     student = current_user.student_profile
+    if student is None:
+        student = StudentProfile(user_id=current_user.id)
+        db.session.add(student)
+        db.session.flush()
     existing = Proposal.query.filter_by(
         project_id=project.id, student_id=student.id
     ).first()
@@ -32,8 +37,14 @@ def apply(project_id):
 
     if request.method == "POST":
         cover_letter = request.form.get("cover_letter", "").strip()
-        proposed_price = request.form.get("proposed_price", 0, type=float)
-        delivery_time = request.form.get("delivery_time", 7, type=int)
+        try:
+            proposed_price = float(request.form.get("proposed_price") or 0)
+        except (ValueError, TypeError):
+            proposed_price = 0
+        try:
+            delivery_time = int(request.form.get("delivery_time") or 7)
+        except (ValueError, TypeError):
+            delivery_time = 7
         if not cover_letter:
             flash("Cover letter is required.", "danger")
             return redirect(url_for("proposal.apply", project_id=project.id))

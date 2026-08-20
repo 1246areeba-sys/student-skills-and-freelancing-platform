@@ -1,0 +1,43 @@
+{% extends "admin/base.html" %}
+{% set title = 'Withdrawal' %}
+{% block admin_content %}
+<div class="panel narrow-panel">
+    <div class="panel-head"><h3>{% if withdrawal %}Edit Withdrawal{% else %}Add Withdrawal{% endif %}</h3></div>
+    <form method="post" action="{% if withdrawal %}{{ url_for('admin.edit_withdrawal', withdrawal_id=withdrawal.id) }}{% else %}{{ url_for('admin.add_withdrawal') }}{% endif %}">
+        <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+        <div class="form-group">
+            <label>Student *</label>
+            <select name="student_id" class="form-control" required>
+                <option value="">— Select Student —</option>
+                {% for s in students %}
+                <option value="{{ s.id }}" {% if withdrawal and s.id == withdrawal.student_id %}selected{% endif %}>{{ s.user.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Amount ($) *</label>
+                <input type="number" step="0.01" name="amount" class="form-control" value="{{ withdrawal.amount or 0 if withdrawal else 0 }}" min="0.01" required>
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <select name="status" class="form-control">
+                    {% for opt in ['pending', 'approved', 'rejected', 'paid'] %}
+                    <option value="{{ opt }}" {% if withdrawal and withdrawal.status == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Method</label>
+            <input type="text" name="method" class="form-control" value="{{ withdrawal.method if withdrawal else 'Bank Transfer' }}">
+        </div>
+        <div class="form-group">
+            <label>Account Details</label>
+            <input type="text" name="account_details" class="form-control" value="{{ withdrawal.account_details if withdrawal else '' }}">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Save</button>
+        <a href="{{ url_for('admin.withdrawals') }}" class="btn btn-outline-gold btn-block">Cancel</a>
+    </form>
+</div>
+{% endblock %}

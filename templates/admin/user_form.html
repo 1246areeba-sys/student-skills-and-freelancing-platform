@@ -1,0 +1,52 @@
+{% extends "admin/base.html" %}
+{% set title = 'User' %}
+{% block admin_content %}
+<div class="panel narrow-panel">
+    <div class="panel-head"><h3>{% if user %}Edit User — {{ user.name }}{% else %}Add User{% endif %}</h3></div>
+    <form method="post" action="{% if user %}{{ url_for('admin.edit_user', user_id=user.id) }}{% else %}{{ url_for('admin.add_user') }}{% endif %}">
+        <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+        <div class="form-group">
+            <label>Name *</label>
+            <input type="text" name="name" class="form-control" value="{{ user.name if user else '' }}" required>
+        </div>
+        <div class="form-group">
+            <label>Email *</label>
+            <input type="email" name="email" class="form-control" value="{{ user.email if user else '' }}" required>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Role</label>
+                <select name="role" class="form-control">
+                    {% for opt in ['student', 'client', 'admin'] %}
+                    <option value="{{ opt }}" {% if user and user.role == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <select name="status" class="form-control">
+                    {% for opt in ['active', 'suspended'] %}
+                    <option value="{{ opt }}" {% if user and user.status == opt %}selected{% endif %}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="text" name="phone" class="form-control" value="{{ user.phone if user else '' }}">
+            </div>
+            <div class="form-group">
+                <label>City</label>
+                <input type="text" name="city" class="form-control" value="{{ user.city if user else '' }}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Password {% if not user %}*{% else %}(leave blank to keep){% endif %}</label>
+            <input type="password" name="password" class="form-control" {% if not user %}required{% endif %}>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Save</button>
+        <a href="{{ url_for('admin.users') }}" class="btn btn-outline-gold btn-block">Cancel</a>
+    </form>
+</div>
+{% endblock %}

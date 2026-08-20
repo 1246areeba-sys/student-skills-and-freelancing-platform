@@ -2,6 +2,10 @@
 {% set title = 'Hires' %}
 {% block admin_content %}
 <div class="panel">
+    <div class="panel-head">
+        <h3>Hires</h3>
+        <a href="{{ url_for('admin.add_hire') }}" class="btn btn-primary btn-sm"><i class="fa-solid fa-user-plus"></i> Hire Student</a>
+    </div>
     <table class="admin-table">
         <thead><tr><th>Project</th><th>Student</th><th>Client</th><th>Status</th><th>Hired</th><th>Actions</th></tr></thead>
         <tbody>

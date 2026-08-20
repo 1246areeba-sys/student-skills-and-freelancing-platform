@@ -1,0 +1,42 @@
+{% extends "admin/base.html" %}
+{% set title = 'Site Logo' %}
+{% block admin_content %}
+<div class="panel">
+    <h2 class="panel-title">Platform Logo</h2>
+    <p class="muted">Upload a logo image from your computer. It will appear across the whole site (navbar, sidebar, admin panel).</p>
+
+    <div class="logo-preview-box">
+        <span class="muted small">Current logo:</span>
+        {% if current_logo %}
+            <img src="{{ url_for('static', filename=current_logo) }}" alt="Current logo" class="logo-preview-img">
+        {% else %}
+            <img src="{{ url_for('static', filename='logo.webp') }}" alt="Default logo" class="logo-preview-img">
+            <span class="muted small">(default)</span>
+        {% endif %}
+    </div>
+
+    <form method="post" action="{{ url_for('admin.site_logo') }}" class="admin-form" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+        <div class="form-group">
+            <label>New Logo (from your PC)</label>
+            <input type="file" name="logo" class="form-control" accept="image/*" required>
+            <span class="muted small">Allowed: png, jpg, jpeg, gif, webp, svg, bmp.</span>
+        </div>
+        <div class="form-actions">
+            <button class="btn btn-primary">Upload & Save</button>
+        </div>
+    </form>
+
+    {% if current_logo %}
+    <form method="post" action="{{ url_for('admin.site_logo') }}" class="admin-form mt-3" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+        <label class="checkbox-inline">
+            <input type="checkbox" name="remove_logo"> Reset to default logo
+        </label>
+        <div class="form-actions">
+            <button class="btn btn-outline-danger btn-sm">Reset Logo</button>
+        </div>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}

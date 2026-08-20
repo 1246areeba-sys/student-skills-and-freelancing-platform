@@ -1,0 +1,44 @@
+{% extends "admin/base.html" %}
+{% set title = 'Edit Hire' %}
+{% block admin_content %}
+<div class="panel narrow-panel">
+    <div class="panel-head"><h3>Edit Hire</h3></div>
+    <form method="post" action="{{ url_for('admin.edit_hire', hire_id=hire.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+        <div class="form-group">
+            <label>Project *</label>
+            <select name="project_id" class="form-control" required>
+                {% for pr in projects %}
+                <option value="{{ pr.id }}" {% if pr.id == hire.project_id %}selected{% endif %}>{{ pr.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Student *</label>
+            <select name="student_id" class="form-control" required>
+                {% for st in students %}
+                <option value="{{ st.id }}" {% if st.id == hire.student_id %}selected{% endif %}>{{ st.user.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Client *</label>
+            <select name="client_id" class="form-control" required>
+                {% for c in clients %}
+                <option value="{{ c.id }}" {% if c.id == hire.client_id %}selected{% endif %}>{{ c.user.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Status</label>
+            <select name="status" class="form-control">
+                {% for opt in ['active', 'completed', 'cancelled'] %}
+                <option value="{{ opt }}" {% if opt == hire.status %}selected{% endif %}>{{ opt }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+        <a href="{{ url_for('admin.hired') }}" class="btn btn-outline-gold btn-block">Cancel</a>
+    </form>
+</div>
+{% endblock %}
