@@ -1477,6 +1477,35 @@ def contact_info():
         return redirect(url_for("admin.contact_info"))
     return render_template("admin/contact_form.html", current=current)
 
+@admin_bp.route("/settings/about", methods=["GET", "POST"])
+@login_required
+@admin_required
+def about_info():
+    """Allow the admin to edit the About Us page content."""
+    current = {
+        "mission": SiteSetting.get(
+            "about_mission",
+            f"{current_app.config['PLATFORM_NAME']} connects university and college students with "
+            "real-world freelance projects. We believe students learn best by "
+            "doing — and that businesses of every size benefit from fresh, "
+            "affordable, talented help.",
+        ),
+        "offers": SiteSetting.get(
+            "about_offers",
+            "Professional student profiles with skills, portfolios and certificates|"
+            "A marketplace of freelance projects posted by clients|"
+            "A complete proposal, hiring and workspace flow|"
+            "Skill assessments and verified badges to build trust|"
+            "A built-in resume builder to launch careers",
+        ),
+    }
+    if request.method == "POST":
+        SiteSetting.set("about_mission", request.form.get("about_mission", "").strip())
+        SiteSetting.set("about_offers", request.form.get("about_offers", "").strip())
+        flash("About Us page updated.", "success")
+        return redirect(url_for("admin.about_info"))
+    return render_template("admin/about_form.html", current=current)
+
 
 # ---------------------------------------------------------------------------
 # Banners

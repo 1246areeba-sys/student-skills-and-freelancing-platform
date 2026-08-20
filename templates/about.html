@@ -11,16 +11,14 @@
     <div class="container narrow">
         <div class="about-block">
             <h2>Our Mission</h2>
-            <p>{{ platform_name }} connects university and college students with real-world freelance projects. We believe students learn best by doing — and that businesses of every size benefit from fresh, affordable, talented help.</p>
+            <p>{{ about_mission }}</p>
         </div>
         <div class="about-block">
             <h2>What We Offer</h2>
             <ul class="feature-list">
-                <li><i class="fa-solid fa-user-graduate text-gold"></i> Professional student profiles with skills, portfolios and certificates</li>
-                <li><i class="fa-solid fa-briefcase text-gold"></i> A marketplace of freelance projects posted by clients</li>
-                <li><i class="fa-solid fa-handshake-angle text-gold"></i> A complete proposal, hiring and workspace flow</li>
-                <li><i class="fa-solid fa-star text-gold"></i> Skill assessments and verified badges to build trust</li>
-                <li><i class="fa-solid fa-file-lines text-gold"></i> A built-in resume builder to launch careers</li>
+                {% for offer in about_offers %}
+                <li><i class="fa-solid fa-circle-check text-gold"></i> {{ offer }}</li>
+                {% endfor %}
             </ul>
         </div>
         <div class="about-cta text-center">

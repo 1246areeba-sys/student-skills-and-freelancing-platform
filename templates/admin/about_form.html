@@ -1,0 +1,24 @@
+{% extends "admin/base.html" %}
+{% set title = 'About Us Page' %}
+{% block admin_content %}
+<div class="panel">
+    <h2 class="panel-title">About Us Page</h2>
+    <p class="muted">Edit the content shown on the public About Us page. Use one line per item in "What We Offer" (lines separated by a new line).</p>
+
+    <form method="post" action="{{ url_for('admin.about_info') }}" class="admin-form">
+        <input type="hidden" name="csrf_token" value="{{ session['_csrf_token'] }}">
+        <div class="form-group">
+            <label>Our Mission</label>
+            <textarea name="about_mission" class="form-control" rows="5" maxlength="2000">{{ current.mission }}</textarea>
+        </div>
+        <div class="form-group">
+            <label>What We Offer (one item per line)</label>
+            <textarea name="about_offers" class="form-control" rows="7" maxlength="2000">{{ current.offers }}</textarea>
+        </div>
+        <div class="form-actions">
+            <button class="btn btn-primary">Save About Page</button>
+            <a href="{{ url_for('home.about') }}" class="btn btn-outline-gold" target="_blank">Preview Page</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

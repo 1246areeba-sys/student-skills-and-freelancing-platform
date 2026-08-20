@@ -1,5 +1,5 @@
 """Home routes: landing page, about, contact."""
-from flask import Blueprint, render_template, request, flash
+from flask import Blueprint, render_template, request, flash, current_app
 from sqlalchemy import func, or_
 
 from extensions import db
@@ -66,7 +66,24 @@ def index():
 
 @home_bp.route("/about")
 def about():
-    return render_template("about.html")
+    from models.site_setting import SiteSetting
+    mission = SiteSetting.get(
+        "about_mission",
+        f"{current_app.config["PLATFORM_NAME"]} connects university and college students with "
+        "real-world freelance projects. We believe students learn best by "
+        "doing \u2014 and that businesses of every size benefit from fresh, "
+        "affordable, talented help.",
+    )
+    offers_raw = SiteSetting.get(
+        "about_offers",
+        "Professional student profiles with skills, portfolios and certificates|"
+        "A marketplace of freelance projects posted by clients|"
+        "A complete proposal, hiring and workspace flow|"
+        "Skill assessments and verified badges to build trust|"
+        "A built-in resume builder to launch careers",
+    )
+    offers = [o.strip() for o in offers_raw.split("|") if o.strip()]
+    return render_template("about.html", about_mission=mission, about_offers=offers)
 
 
 @home_bp.route("/contact", methods=["GET", "POST"])
